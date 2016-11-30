@@ -1,0 +1,126 @@
+body { 
+  padding-top: 100px;
+  margin-bottom: 60px;
+}
+
+.fa-exclamation-triangle {
+  color: #e74c3c;
+}
+
+.fa-check {
+  color: #00bc8c;
+}
+
+/* Fix for using font awesome icons*/
+.form-control-feedback {
+  margin-top: 14px;
+}
+
+/* Fixes disabled buttons not have the now-allowed cursor */
+button:disabled, button[disabled] {
+  cursor: not-allowed;
+  pointer-events: all !important;
+}
+
+/* To prevent both ng-hide and ng-show elements from appearing at the same time */
+.ng-hide.ng-hide-animate {
+  display: none !important;
+}
+
+/* Footer Stuff */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+.footer {
+  position: absolute;
+  padding-top: 30px;
+  bottom: 0;
+  width: 100%;
+  height: 61px;
+}
+
+.footer p {
+  text-align: center;
+}
+
+/*=====================================Navbar Fixes=====================================*/
+
+.pagination, .carousel, .panel-title a { cursor: pointer; }
+
+.navbar-collapse.collapse {
+  display: block!important;
+}
+
+.navbar-nav>li, .navbar-nav {
+  float: left !important;
+}
+
+.navbar-nav.navbar-right:last-child {
+  margin-right: -15px !important;
+}
+
+.navbar-right {
+  float: right!important;
+}
+
+.dropdown-menu {
+  width: 100%;
+}
+
+/*=====================================Modal CSS=====================================*/
+
+label {
+  margin-top: 5px;
+}
+
+.form-group {
+  margin-top: 35px
+}
+
+.input-error span {
+  color: #e74c3c;
+}
+
+.input-error span.ng-hide { 
+  display: block !important;
+  visibility: hidden;
+}
+
+#validation-error {
+  height: 53px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+#validation-error.ng-hide {
+  display: block !important;
+  visibility: hidden;
+}
+
+#username, #email, #password, #pwCheck {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+#loginForm > div .form-control-feedback {
+  margin-right: -15px;
+}
+
+#login, #sign-up {
+  margin-top: 5px
+}
+
+#login-switch > h5 {
+  padding-top: 5px;
+  text-align: center;
+}
+
+#cancel {
+  float: right;
+  margin-top: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+  color: red;
+}

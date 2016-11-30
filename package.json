@@ -1,0 +1,27 @@
+{
+  "name": "book-trading-app",
+  "version": "1.0.0",
+  "description": "Book Trading App",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mtharmen/book-trading-app.git"
+  },
+  "author": "Muhinthan Tharmendran",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mtharmen/book-trading-app/issues"
+  },
+  "homepage": "https://github.com/mtharmen/book-trading-app#readme",
+  "dependencies": {
+    "dotenv": "^2.0.0",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "mongoose": "^4.6.8",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
+  }
+}

@@ -1,0 +1,146 @@
+<span ng-click="cancel()"><i class="fa fa-times fa-2x" id="cancel" aria-hidden="true"></i></span>
+</div>
+<form class="form-horizontal row" name="loginForm" id="loginForm"
+         ng-model-options="{ allowInvalid: true, debounce: 200 }" novalidate>
+  
+  <div class="form-group has-feedback">
+    
+    <!-- TODO: Rework this into ng-repeat -->
+    <!--Email-->
+    <div id="email-group" class="col-xs-10 col-xs-offset-1">
+      <label class="col-xs-12 input-error" for="email">
+        <span ng-show="loginForm.email.$invalid && loginForm.email.$viewValue">Invalid Email</span>
+      </label>
+
+      <div class="input-group col-xs-12">
+        <span class="input-group-addon">
+          <i class="fa fa-envelope-o" aria-hidden="true"></i>
+        </span>
+        <input type="email" class="form-control col-xs-12" id="email" name="email"
+               placeholder="Email" required
+               ng-model="user.local.email">
+
+        <i class="fa fa-check form-control-feedback" 
+              ng-show="loginForm.email.$valid"></i>
+        <i class="fa fa-exclamation-triangle form-control-feedback" 
+              ng-show="loginForm.email.$invalid && loginForm.email.$viewValue"></i>
+      </div>
+    </div>
+
+    <!--First Name-->
+    <div id="firstname-group" class="col-xs-10 col-xs-offset-1" ng-show="newAccount">
+
+      <div class="col-xs-12 input-group" ng-if="newAccount">
+        <span class="input-group-addon">
+          <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+        </span>
+        <input type="text" class="form-control" id="firstname" name="firstname"
+               placeholder="First Name"
+               ng-model="user.firstname">
+      </div>
+    </div>
+
+    <!--Last Name-->
+    <div id="lastname-group" class="col-xs-10 col-xs-offset-1" ng-show="newAccount">
+
+      <div class="col-xs-12 input-group" ng-if="newAccount">
+        <span class="input-group-addon">
+          <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+        </span>
+        <input type="text" class="form-control" id="lastname" name="lastname"
+               placeholder="Last Name"
+               ng-model="user.lastname">
+      </div>
+    </div>
+
+    <!--City-->
+    <div id="city-group" class="col-xs-10 col-xs-offset-1" ng-show="newAccount">
+
+      <div class="col-xs-12 input-group" ng-if="newAccount">
+        <span class="input-group-addon">
+          <i class="fa fa-address-card" aria-hidden="true"></i>
+        </span>
+        <input type="text" class="form-control" id="city" name="city"
+               placeholder="City"
+               ng-model="user.address.city">
+      </div>
+    </div>
+
+    <!--Province-->
+    <div id="province-group" class="col-xs-10 col-xs-offset-1" ng-show="newAccount">
+
+      <div class="col-xs-12 input-group" ng-if="newAccount">
+        <span class="input-group-addon" >
+          <i class="fa fa-address-card" aria-hidden="true"></i>
+        </span>
+        <input type="text" class="form-control" id="province" name="province"
+               placeholder="Province"
+               ng-model="user.address.province">
+      </div>
+    </div>
+
+    <!--Password-->
+    <div id="password-group" class="col-xs-10 col-xs-offset-1">
+      <label class="col-xs-12 input-error" for="password"> 
+        <span ng-show="loginForm.password.$error.minlength">Username must be at least 6 characters</span>
+      </label>
+
+      <div class="input-group col-xs-12">
+        <span class="input-group-addon">
+          <i class="fa fa-key" aria-hidden="true"></i>
+        </span>
+        <input type="password" class="form-control col-xs-12" id="password" name="password"
+               placeholder="Password" required
+               ng-model="user.local.password" ng-minlength="6">
+
+        <i class="fa fa-check form-control-feedback" 
+              ng-show="loginForm.password.$valid"></i>
+        <i class="fa fa-exclamation-triangle form-control-feedback" 
+              ng-show="loginForm.password.$error.minlength"></i>
+      </div>
+    </div>
+    
+    <!--Password Check-->
+    <div id="pwCheck-group" class="col-xs-10 col-xs-offset-1 ng-hide" ng-show="newAccount">
+      <label class="col-xs-12 input-error" for="pwCheck">
+        <span ng-show="loginForm.pwCheck.$error.pwmatch">Does not match password</span>
+      </label>
+
+      <div class="input-group col-xs-12" ng-if="newAccount">
+        <span class="input-group-addon">
+          <i class="fa fa-key" aria-hidden="true"></i>
+        </span>
+        <input type="password" class="form-control col-xs-12" id="pwCheck" name="pwCheck"
+               placeholder="Re-type Password" required
+               ng-model="user.local.pwCheck" pw-check="password">
+
+        <i class="fa fa-check form-control-feedback" 
+              ng-show="loginForm.pwCheck.$valid"></i>
+        <i class="fa fa-exclamation-triangle form-control-feedback" 
+              ng-show="loginForm.pwCheck.$error.pwmatch"></i>
+      </div>
+    </div>
+
+
+    
+    <!-- Error Message -->
+    <div class="col-xs-10 col-xs-offset-1">
+    <div uib-alert class="alert alert-danger" id="validation-error" 
+       ng-show="errMsg">{{ errMsg }}</div>
+    </div>
+    
+    <button class="btn btn-primary col-xs-8 col-xs-offset-2" id="login" 
+            ng-click="signIn(local)" ng-hide="newAccount" ng-disabled="loginForm.$invalid">Login
+    </button>
+
+    <button class="btn btn-primary col-xs-8 col-xs-offset-2" id="sign-up"
+            ng-click="signUp(local)"ng-show="newAccount" ng-disabled="loginForm.$invalid">Sign 
+    </button>
+  </div>
+  <div id="login-switch" class="col-xs-12">
+    <h5 ng-hide="newAccount">Don't have an account? 
+      <a href='#' ng-click="switch(newAccount)">Click here to Sign Up</a></h5>
+    <h5 ng-show="newAccount">
+      <a href='#' ng-click="switch(newAccount)">Go Back to Login</a></h5>
+  </div>
+</form>
