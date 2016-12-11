@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 // 	ISBN  : String
 // }, { _id : false })
 
-var tradeSchema = new mongoose.Schema({ 
+var tradeSchema = new mongoose.Schema({
 	offer   : {
 		owner : String,
 		ISBN  : String
@@ -14,7 +14,11 @@ var tradeSchema = new mongoose.Schema({
 		owner : String,
 		ISBN  : String
 	},
-	status  : String  // pending or accepted or rejected
-})
+	status       : String,  // pending or accepted or rejected
+	createDate   : Date,
+	responseDate : Date,
+	showOffer    : Boolean,
+	showRequest  : Boolean
+});
 
 module.exports = mongoose.model('Trade', tradeSchema);

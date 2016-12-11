@@ -1,14 +1,28 @@
-<button class="btn btn-primary" ng-click="getOffers()">{{myOffers.length}} Offers <span class="badge" ng-show="offerResponses">New</span></button>
-<button class="btn btn-primary" ng-click="getRequests()">{{myRequests.length}} Requests <span class="badge" ng-show="newRequests">New</span></button>
+<button class="btn btn-primary" ng-click="getOffers()"><span class="badge" ng-show="offerResponses">{{offerResponses}} New</span> Offers</button>
+<button class="btn btn-primary" ng-click="getRequests()"><span class="badge" ng-show="newRequests">{{newRequests}} New</span> Requests</button>
 
-<div ng-repeat="tradeOffer in myOffers" ng-show="showOffers" class="well">
-	<img src="imgs/{{tradeOffer.offer.ISBN}}.png" />
-	<i class="fa fa-exchange" aria-hidden="true"></i>
-	<img src="imgs/{{tradeOffer.request.ISBN}}.png" />
+<div ng-show="showOffers">
+	<div ng-repeat="tradeOffer in myOffers" ng-show="myOffers.length" class="well">
+		<img src="imgs/{{tradeOffer.offer.ISBN}}.png" />
+		<i class="fa fa-exchange" aria-hidden="true"></i>
+		<img src="imgs/{{tradeOffer.request.ISBN}}.png" />
+		<button class="btn btn-danger" ng-click="removeTrade(tradeOffer, 'offer')">Remove</button>
+		<button class="btn btn-warning" ng-click="hideTrade(tradeRequest, 'request')" ng-show="tradeRequest.status === 'accepted'">Hide</button>
+		{{tradeOffer.status}}
+	</div>
+	<div ng-hide="myOffers.length">You have made no offers</div>
 </div>
 
-<div ng-repeat="tradeRequest in myRequests" ng-show="showRequests" class="well">
-	<img src="imgs/{{tradeRequest.offer.ISBN}}.png" />
-	<i class="fa fa-exchange" aria-hidden="true"></i>
-	<img src="imgs/{{tradeRequest.request.ISBN}}.png" />
+<div ng-show="showRequests">
+	<div ng-repeat="tradeRequest in myRequests" ng-show="myRequests.length" class="well">
+		<img src="imgs/{{tradeRequest.offer.ISBN}}.png" />
+		<i class="fa fa-exchange" aria-hidden="true"></i>
+		<img src="imgs/{{tradeRequest.request.ISBN}}.png" />
+		<button class="btn btn-danger" ng-click="removeTrade(tradeRequest, 'request')">Remove</button>
+		<button class="btn btn-warning" ng-click="hideTrade(tradeRequest, 'request')" ng-show="tradeRequest.status !== 'pending'">Hide</button>
+		<button class="btn btn-success" ng-click="requestResponse(tradeRequest, true)" ng-show="tradeRequest.status === 'pending'">Accept</button>
+		<button class="btn btn-warning" ng-click="requestResponse(tradeRequest, false)" ng-show="tradeRequest.status === 'pending'">Reject</button>
+		{{tradeRequest.status}}
+	</div>
+	<div ng-hide="myRequests.length">You have no requests</div>
 </div>

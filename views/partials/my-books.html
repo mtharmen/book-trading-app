@@ -29,4 +29,5 @@
 	<div ng-repeat="book in searchResults" ng-show="!loading" class="col-md-2 col-xs-4 book-cover">
 		<img src={{book.image}} class="center-block img-responsive" ng-click="moreDetails(book, 'add')" />
 	</div>
+	<div ng-show="!loading && !searchResults" class="text-center">No Books Found</div>
 </div>

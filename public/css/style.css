@@ -11,11 +11,6 @@ body {
   color: #00bc8c;
 }
 
-/* Fix for using font awesome icons*/
-.form-control-feedback {
-  margin-top: 14px;
-}
-
 /* Fixes disabled buttons not have the now-allowed cursor */
 button:disabled, button[disabled] {
   cursor: not-allowed;
@@ -76,7 +71,7 @@ label {
 }
 
 #province:invalid { 
-  color: gray; 
+  color: #999999; 
 }
 
 .form-group {
@@ -87,10 +82,6 @@ label {
   height: 20px;
 }
 
-.input-error span {
-  color: #e74c3c;
-}
-
 .input-group-addon {
   width: 50px;
 }
@@ -99,8 +90,6 @@ label {
   border-top-right-radius: 6px !important;
   border-bottom-right-radius: 6px !important;
 }
-
-
 
 #validation-error {
   height: 53px;
@@ -115,7 +104,8 @@ label {
 }
 
 #loginForm > div .form-control-feedback {
-  margin-right: -15px;
+  margin-top: 18px;
+  margin-right: 5px;
 }
 
 #login, #sign-up {

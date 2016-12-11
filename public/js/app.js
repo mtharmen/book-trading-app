@@ -1,48 +1,46 @@
-'use strict';
-
 var bookApp = angular.module('votingApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap']);
 
 // ACCOUNT FACTORTY
-bookApp.factory('accountFactory', ['$http', '$window', '$location', function($http, $window, $location) {
+bookApp.factory('accountFactory', ['$http', '$location', function($http, $location) {
 
-  var storedUser = { user: undefined }
+  var storedUser = { user: undefined };
 
   return {    
     fetchUser: function() {
-      return $http.get('/auth/user')
+      return $http.get('/auth/user');
     },
 
     getUser: storedUser,
 
     setUser: function(user) {
-      storedUser.user = user
+      storedUser.user = user;
     },
 
     localSignUp: function(user) {
-      return $http.post('/auth/local-signup', user)
+      return $http.post('/auth/local-signup', user);
     },
 
     localSignIn: function(user) {
-      return $http.post('/auth/local-login', user)
+      return $http.post('/auth/local-login', user);
     },
 
     updateInfo: function(info) {
-      return $http.post('/auth/update', info)
+      return $http.post('/auth/update', info);
     },
 
     redirect: function(path) {
-      $location.url(path)
+      $location.url(path);
     },
 
     logout: function(){
       storedUser.user = undefined;
       $http.get('/auth/logout').then(function(response) {
-        return response.data
+        return response.data;
       });
-      $location.url('/')
+      $location.url('/');
     }
-  }
-}])
+  };
+}]);
 
 // MODAL FACTORTY
 bookApp.factory('modalFactory', ['$uibModal', function($uibModal) {
@@ -52,12 +50,12 @@ bookApp.factory('modalFactory', ['$uibModal', function($uibModal) {
       
       var modalOptions = {
         animation: true,
-        templateUrl: 'partials/form-modal',
+        templateUrl: 'partials/login-form',
         controller: 'loginModalCtrl'
-      }
+      };
       
       if (scope) {
-        modalOptions.scope = scope
+        modalOptions.scope = scope;
       }
       
       return $uibModal.open(modalOptions);
@@ -74,7 +72,7 @@ bookApp.factory('modalFactory', ['$uibModal', function($uibModal) {
             return {user: user, bookInfo: bookInfo, type: type};
           }
         }
-      }
+      };
       
       return $uibModal.open(modalOptions);
     },
@@ -83,10 +81,10 @@ bookApp.factory('modalFactory', ['$uibModal', function($uibModal) {
 
       var choice = '';
       if (choose) {
-        choice += '<button class="btn btn-primary col-xs-6" ng-click="confirm()">Okay</button>'
-        choice += '<button class="btn btn-danger col-xs-6" ng-click="cancel()">Cancel</button>'
+        choice += '<button class="btn btn-primary col-xs-6" ng-click="confirm()">Okay</button>';
+        choice += '<button class="btn btn-danger col-xs-6" ng-click="cancel()">Cancel</button>';
       } else {
-        choice = '<button class="btn btn-primary col-xs-6 col-xs-offset-3" ng-click="confirm()">Okay</button>'
+        choice = '<button class="btn btn-primary col-xs-6 col-xs-offset-3" ng-click="confirm()">Okay</button>';
       }
 
       var modalOptions = {
@@ -113,54 +111,62 @@ bookApp.factory('modalFactory', ['$uibModal', function($uibModal) {
       
       return $uibModal.open(modalOptions);
     }
-  }
-}])
+  };
+}]);
 
 // BOOK FACTORTY
-bookApp.factory('bookFactory', ['$http', '$window', function($http, $window) {
+bookApp.factory('bookFactory', ['$http', '$location', function($http, $location) {
 
-  var pending = { book: null }
+  var pending = { book: null };
 
   return {    
     getBooks: function(user) {
-      return $http.get('/api/allBooks/' + user)
+      return $http.get('/api/allBooks/' + user);
     },
 
     search: function(query) {
-      return $http.post('/api/search', query)
+      return $http.post('/api/search', query);
     },
 
     addBook: function(book) {
-      return $http.post('/api/addBook', book)
+      return $http.post('/api/addBook', book);
     },
 
     removeBook: function(book) {
-      return $http.post('/api/removeBook', book)
+      return $http.post('/api/removeBook', book);
     },
 
     pendingTrade: function(book) {
-      pending.book = book
+      pending.book = book;
     },
 
     getPendingTrade: pending,
 
     newTrade: function(newTrade) {
-      return $http.post('/api/newTrade', newTrade)
+      return $http.post('/api/newTrade', newTrade);
     },
 
     getTrades: function(type, user, ISBN) {
-      return $http.post('/api/getTrades', {type: type, user: user, ISBN: ISBN})
+      return $http.post('/api/getTrades', {type: type, user: user, ISBN: ISBN});
     },
 
-    respondToTrade: function(response) {
-      return $http.post('/api/respondToTrade', response)
+    respondToTrade: function(id, accept) {
+      return $http.post('/api/respondToTrade', {id: id, accept: accept});
     },
 
     removeTrade: function(id) {
-      return $http.post('/api/removeTrade', {id: id})
+      return $http.post('/api/removeTrade', {id: id});
+    },
+
+    hideTrade: function(id, type) {
+      return $http.post('/api/hideTrade', {id: id, type: type});
+    },
+
+    redirect: function(path) {
+      $location.url(path);
     }
-  }
-}])
+  };
+}]);
 
 // ROUTING ===============================================================
 bookApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
@@ -193,9 +199,9 @@ bookApp.config(['$routeProvider', '$locationProvider', function($routeProvider, 
       resolve     : {
         pending : function(bookFactory) {
           if (!bookFactory.getPendingTrade.book) {
-            window.location = '/'
+            window.location = '/';
           } else {
-            return bookFactory.getPendingTrade
+            return bookFactory.getPendingTrade;
           }
         }
       }
@@ -220,22 +226,22 @@ bookApp.controller('navCtrl', ['$scope', 'accountFactory', 'modalFactory', funct
    
   accountFactory.fetchUser().then(
     function successCB (response) {
-      $scope.current.user = response.data
+      $scope.current.user = response.data;
       $scope.loaded = true;
     },
     function errorCB (response) {
       console.error(response.status + ':' + response.statusText);
-      accountFactory.redirect('/error')
+      accountFactory.redirect('/error');
     });
 
   $scope.newUser = function () {
               
-    var modalInstance = modalFactory.login($scope)
+    var modalInstance = modalFactory.login($scope);
 
     modalInstance.result.then(
       function(user) {
         $scope.current.user = user;
-        accountFactory.redirect('/')
+        accountFactory.redirect('/');
       }, 
       function() {
       }
@@ -243,17 +249,17 @@ bookApp.controller('navCtrl', ['$scope', 'accountFactory', 'modalFactory', funct
   };
 
   $scope.logout = function() {
-    var modalInstance = modalFactory.confirm('Logout?', true)
+    var modalInstance = modalFactory.confirm('Logout?', true);
     
     modalInstance.result.then(
       function(response) {
-        accountFactory.logout()
+        accountFactory.logout();
       }, 
       function() {
       }
     );
      
-  }
+  };
   
 }]);
 
@@ -274,52 +280,53 @@ bookApp.controller('loginModalCtrl', ['$scope', '$uibModalInstance', '$http', 'a
     'Quebec', 
     'Saskatchewan', 
     'Yukon'
-  ]
+  ];
 
-  $scope.atSymbol = "^[^@]*$"
-
-  $scope.validEmail = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+  $scope.atSymbol = '^[^@]*$';
+  $scope.validEmail = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+  // $scope.validCharacters = "/^[a-z ,.'-]+$/i";
+  $scope.validCharacters = "^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$";
 
   $scope.signUp = function(user) {
-    $scope.errMsg = ''
+    $scope.errMsg = '';
     accountFactory.localSignUp(user).then(
       function successCB (response) {
         if (response.data.message) {
-          $scope.errMsg = response.data.message
+          $scope.errMsg = response.data.message;
         }
         if (response.data._id) {
-          $uibModalInstance.close(response.data)          
+          $uibModalInstance.close(response.data);       
         }
       },
       function errorCB (response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error'
+        window.location = '/error';
     });
-  }
+  };
   
   $scope.signIn = function(user) {
-    $scope.errMsg = ''
+    $scope.errMsg = '';
     accountFactory.localSignIn(user).then(
       function successCB (response) {
         if (response.data.message) {
-          $scope.errMsg = response.data.message
+          $scope.errMsg = response.data.message;
         }
         if (response.data._id) {
-          $uibModalInstance.close(response.data)
+          $uibModalInstance.close(response.data);
         }
       },
       function errorCB (response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error'
+        window.location = '/error';
     });  
-  }
+  };
   
   $scope.switch = function(newAccount) {
     $scope.newUser = {};
     $scope.loginForm.$setPristine();
     $scope.errMsg = '';
-    $scope.newAccount = !newAccount
-  }
+    $scope.newAccount = !newAccount;
+  };
   
   $scope.confirm = function() {
     $uibModalInstance.close('yes');
@@ -332,29 +339,29 @@ bookApp.controller('loginModalCtrl', ['$scope', '$uibModalInstance', '$http', 'a
 }]);
 
 // BOOK MODAL
-bookApp.controller('bookModalCtrl', ['$scope', '$uibModalInstance', '$http', 'settings', function ($scope, $uibModalInstance, $http, settings) {
+bookApp.controller('bookModalCtrl', ['$scope', '$uibModalInstance', 'settings', function ($scope, $uibModalInstance, settings) {
 
   $scope.book   = settings.bookInfo;
-  $scope.add    = settings.type === 'add'    ? true : null
-  $scope.remove = settings.type === 'remove' ? true : null
+  $scope.add    = settings.type === 'add'    ? true : null;
+  $scope.remove = settings.type === 'remove' ? true : null;
 
-  $scope.user = settings.user
+  $scope.user = settings.user;
 
   $scope.cancel = function() {
-    $uibModalInstance.dismiss('cancel')
-  }
+    $uibModalInstance.dismiss('cancel');
+  };
 
   $scope.addBook = function() {
-    $uibModalInstance.close('add')
-  }
+    $uibModalInstance.close('add');
+  };
 
   $scope.removeBook = function() {
-    $uibModalInstance.close('remove')
-  }
+    $uibModalInstance.close('remove');
+  };
 
   $scope.makeTrade = function(book) {
-    $uibModalInstance.close(book)
-  }
+    $uibModalInstance.close(book);
+  };
 
 }]);
 
@@ -374,18 +381,18 @@ bookApp.controller('homeCtrl', ['$scope', 'bookFactory', 'modalFactory', '$locat
       });
 
   $scope.moreDetails = function(book, type) {
-    var user = $scope.current.user ? $scope.current.user.username : undefined
-    var modalInstance = modalFactory.bookDetails(user, book, type)
+    var user = $scope.current.user ? $scope.current.user.username : undefined;
+    var modalInstance = modalFactory.bookDetails(user, book, type);
 
     modalInstance.result.then(
       function (response) {
-        bookFactory.pendingTrade(book)
-        $location.url('/new-trade')
-      }, 
+        bookFactory.pendingTrade(book);
+        $location.url('/new-trade');
+      },
       function (response) {
         //console.log(response)
       });
-  }
+  };
 
 }]);
 
@@ -398,50 +405,93 @@ bookApp.controller('userCtrl', ['$scope', 'bookFactory', function($scope, bookFa
 // MY TRADES
 bookApp.controller('myTradesCtrl', ['$scope', 'bookFactory', function($scope, bookFactory) {
 
+  var getOffers = function() {
     bookFactory.getTrades('offer', $scope.current.user.username, null)
-    .then(function(response) {
-        $scope.loading = false;
+      .then(function(response) {
         $scope.myOffers = response.data;
-        $scope.offerResponses = $scope.myOffers.filter(function(trade) { return trade.status !== 'pending' }).length
+        $scope.offerResponses = $scope.myOffers.filter(function(trade) { return trade.status !== 'pending'; }).length;
       }, function (response) {
-        $scope.loading = false;
         console.error(response.status + ':' + response.statusText);
         window.location = '/error';
       });
+  };
+  
 
-  bookFactory.getTrades('request', $scope.current.user.username, null)
-    .then(function(response) {
-        $scope.loading = false;
+  var getRequests = function() {
+    bookFactory.getTrades('request', $scope.current.user.username, null)
+      .then(function(response) {
         $scope.myRequests = response.data;
-        $scope.newRequests = $scope.myRequests.filter(function(trade) { return trade.status === 'pending' }).length
+        $scope.newRequests = $scope.myRequests.filter(function(trade) { return trade.status === 'pending'; }).length;
       }, function (response) {
-        $scope.loading = false;
         console.error(response.status + ':' + response.statusText);
         window.location = '/error';
       });
+  };
+  
+  getOffers();
+  getRequests();
 
   $scope.getOffers = function() {
     $scope.showOffers = true;
     $scope.showRequests = false;
-  }
+  };
 
   $scope.getRequests = function() {
     $scope.showOffers = false;
     $scope.showRequests = true;
-  }
+  };
+
+  $scope.removeTrade = function(trade, type) {
+    bookFactory.removeTrade(trade._id)
+      .then(function(response) {
+        if (type === 'offer') {
+          $scope.myOffers       = $scope.myOffers.filter(function(myTrade) { return myTrade._id !== trade._id; });
+          $scope.offerResponses += trade.status === 'pending' ? 0 : -1;
+        } else {
+          $scope.myRequests  = $scope.myRequests.filter(function(myTrade) { return myTrade._id !== trade._id; });
+          $scope.newRequests += trade.status === 'pending' ? 0 : -1;
+        }
+      }, function (response) {
+        console.error(response.status + ':' + response.statusText);
+        window.location = '/error';
+      });
+  };
+
+  $scope.requestResponse = function(trade, accept) {
+    bookFactory.respondToTrade(trade._id, accept)
+      .then(function(response) {
+        trade.status = accept ? 'accepted' : 'rejected';
+        $scope.newRequests--;
+        getRequests();
+      }, function(response) {
+        console.error(response.status + ':' + response.statusText);
+        window.location = '/error';
+      });
+  };
+
+  $scope.hideTrade = function(trade, type) {
+    bookFactory.hideTrade(trade._id, type)
+      .then(function(response) {
+        if (type === 'offer') { trade.showOffer = false; }
+        else if (type === 'request') { trade.showRequest = false; }
+      }, function(response) {
+        console.error(response.status + ':' + response.statusText);
+        window.location = '/error';
+      });
+  };
 
 }]);
 
 // NEW TRADE
-bookApp.controller('newTradeCtrl', ['$scope', 'bookFactory', 'pending', function($scope, bookFactory, pending) {
+bookApp.controller('newTradeCtrl', ['$scope', 'bookFactory', 'modalFactory', 'pending', function($scope, bookFactory, modalFactory, pending) {
 
-  $scope.pending = pending
+  $scope.pending = pending;
 
-  $scope.loading = true
+  $scope.loading = true;
 
   $scope.bookOffer = {
     image: 'http://placehold.it/128x192'
-  }
+  };
 
   bookFactory.getBooks($scope.current.user.username)
     .then(function(response) {
@@ -454,40 +504,42 @@ bookApp.controller('newTradeCtrl', ['$scope', 'bookFactory', 'pending', function
       });
 
   $scope.offer = function(book) {
-    $scope.bookOffer = book
-  }
+    $scope.bookOffer = book;
+  };
 
   $scope.initiateTrade = function(offer, request) {
     var newTrade = {
       offer   : {
         owner : offer.owner,
-        ISBN  : offer.ISBN
+        ISBN  : offer.ISBN,
       },
       request : {
         owner : request.owner,
-        ISBN  : request.ISBN
+        ISBN  : request.ISBN,
       }
-    }
+    };
 
     bookFactory.newTrade(newTrade)
       .then(function successCB (response) {
-        console.log(response)
+        console.log(response);
+        bookFactory.redirect('/my-trades');
+
       }, function errorCB (response) {
         if (response.data == "Trade already exists") {
-          alert('Trade already exists')
+          var modalInstance = modalFactory.confirm('Trade already exists');
         } else {
           console.error(response.status + ':' + response.statusText);
           window.location = '/error';
         }
-      })
-  }
+      });
+  };
 
 }]);
 
 // MY BOOKS
 bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', function($scope, bookFactory, modalFactory) {
 
-  $scope.loading = true
+  $scope.loading = true;
 
   bookFactory.getBooks($scope.current.user.username)
     .then(function(response) {
@@ -500,27 +552,35 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
       });
 
   $scope.search = function(query) {
+    var valid = /^[A-Za-z0-9\s\-_,\.;:()]+$/;
 
-    $scope.loading = true
-    bookFactory.search(query)
-      .then(function(response) {
-        $scope.loading = false;
-        $scope.searchResults = response.data
-      }, function(response) {
-        $scope.loading = false;
-        console.error(response.status + ':' + response.statusText);
-        window.location = '/error'
-      });
-  }
+    if (query.title.match(valid)) {
+      $scope.loading = true;
+      bookFactory.search(query)
+        .then(function(response) {
+          $scope.loading = false;
+          $scope.searchResults = response.data;
+        }, function(response) {
+          $scope.loading = false;
+          console.error(response.status + ':' + response.statusText);
+          window.location = '/error';
+        });
+    } else {
+      var modalInstance = modalFactory.confirm('Invalid Character Used');
+      query.title = undefined;
+    }
+
+    
+  };
 
   $scope.moreDetails = function(book, type) {
     var check = $scope.myBooks.filter(function(myBook) {
-      return myBook.ISBN === book.ISBN
-    })
+      return myBook.ISBN === book.ISBN;
+    });
 
-    book.owner = check.length ? $scope.current.user.username : null
+    book.owner = check.length ? $scope.current.user.username : null;
 
-    var modalInstance = modalFactory.bookDetails($scope.current.user.username, book, type)
+    var modalInstance = modalFactory.bookDetails($scope.current.user.username, book, type);
 
     modalInstance.result.then(
       function(response) {
@@ -528,10 +588,10 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
           // Adding Book
           bookFactory.addBook(book)
             .then(function successCB (response) {
-              $scope.myBooks.push(response.data)
+              $scope.myBooks.push(response.data);
             }, function errorCB (response) {
               console.error(response.status + ':' + response.statusText);
-              window.location = '/error'
+              window.location = '/error';
             });
 
         } else if (response === 'remove') {
@@ -539,11 +599,11 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
           bookFactory.removeBook(book)
             .then(function successCB (response) {
               $scope.myBooks = $scope.myBooks.filter(function(myBook) {
-                return myBook.ISBN !== book.ISBN
-              })
+                return myBook.ISBN !== book.ISBN;
+              });
             }, function errorCB (response) {
               console.error(response.status + ':' + response.statusText);
-              window.location = '/error'
+              window.location = '/error';
             });
 
         }
@@ -553,7 +613,7 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
       }
     );
     
-  }
+  };
 
   $scope.searchResults = [
     {"title":"Harry Potter and the Cursed Child – Parts One and Two (Special Rehearsal Edition)","authors":["J.K. Rowling","John Tiffany","Jack Thorne"],"ISBN":"1781107041","image":"http://books.google.com/books/content?id=tcSMCwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"},
@@ -561,7 +621,7 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
     {"title":"Harry Potter and the Deathly Hallows","authors":["J. K. Rowling"],"ISBN":"1408855712","image":"http://books.google.com/books/content?id=I5nHBAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"},
     {"title":"Harry Potter and the Order of the Phoenix","authors":["J. K. Rowling"],"ISBN":"0545582970","image":"http://books.google.com/books/content?id=Y0HbmAEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"},
     {"title":"Harry Potter Coloring Book","authors":["Inc. Scholastic"],"ISBN":"1338029991","image":"http://books.google.com/books/content?id=lMM4jgEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"}
-  ]
+  ];
 }]);
 
 // SETTINGS
@@ -573,13 +633,13 @@ bookApp.controller('settingsCtrl', ['$scope', 'accountFactory', function($scope,
         lastname     : $scope.current.user.name.last,
         province     : $scope.current.user.address.province,
         city         : $scope.current.user.address.city
-      }
-      $scope.update = angular.copy($scope.defaults)
-    }
+      };
+      $scope.update = angular.copy($scope.defaults);
+    };
     
-    setDefaults()
+    setDefaults();
 
-    $scope.locations = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon']
+    $scope.locations = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
 
     $scope.submit = function(update, defaults) {
 
@@ -589,26 +649,26 @@ bookApp.controller('settingsCtrl', ['$scope', 'accountFactory', function($scope,
         accountFactory.updateInfo(update)
           .then(function successCB (response) {
             if (response.data.message) {
-              console.error(response.data.message)
-              $scope.errMsg = response.data.message
+              console.error(response.data.message);
+              $scope.errMsg = response.data.message;
             }
             if (response.data._id) {
-              $scope.successMsg = 'Info Updated'
-              $scope.current.user = response.data
-              setDefaults()
+              $scope.successMsg = 'Info Updated';
+              $scope.current.user = response.data;
+              setDefaults();
             }
           }, function errorCB (response) {
             console.error(response.status + ':' + response.statusText);
-            window.location = '/error'
+            window.location = '/error';
           });
       // }
-    }
+    };
 
 }]);
 
 bookApp.controller('errorCtrl', ['$scope', function($scope){
-  $scope.message = "Error"
-}])
+  $scope.message = "Error";
+}]);
 
 
 bookApp.directive("pwMatch", function() {

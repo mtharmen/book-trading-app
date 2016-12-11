@@ -33,8 +33,8 @@ module.exports = function(app, base) {
 
 	// Error Handler
 	app.use(function(err, req, res, next) {
-	    console.log(err)
-	    res.status(err.status || 500).send(err)
+	    console.error(err);
+	    res.status(err.status || 500).send(err);
 	});
 
 	app.use(cookieParser());
@@ -57,4 +57,4 @@ module.exports = function(app, base) {
 
 	// all environments
 	app.use(express.static(path.join(base, 'public')));
-}
+};

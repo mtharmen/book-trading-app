@@ -3,8 +3,7 @@
   <div uib-alert class="alert alert-success" ng-show="successMsg"><h4 class="text-center">{{successMsg}}</h4></div>
 </div>
 
-<form class="form-horizontal row" name="updateForm" id="updateForm"
-      ng-model-options="{ allowInvalid: true, debounce: 200 }" novalidate>
+<form class="form-horizontal row" name="updateForm" id="updateForm" ng-model-options="{ allowInvalid: true, debounce: 200 }" novalidate>
   
   <div class="form-group has-feedback">
 
@@ -60,7 +59,7 @@
     	<!--New Password-->
 	    <div id="new-password-group" class="col-md-6 col-xs-12">
 			<label class="col-xs-12 input-error" for="newPassword"> 
-			New Password: <span ng-show="updateForm.newPassword.$error.minlength">Must be at least 6 characters</span>
+			New Password: <span class="text-danger" ng-show="updateForm.newPassword.$error.minlength">Must be at least 6 characters</span>
 			</label>
 			<input type="password" class="form-control" id="new-password" name="newPassword" placeholder="New Password" ng-model="update.newPassword" ng-minlength="6">
 	    </div>
@@ -68,7 +67,7 @@
 	    <!-- New Password Check -->
 		<div id="pwCheck-group" class="col-md-6 col-xs-12">
 	        <label class="col-xs-12 input-error" for="pwCheck">
-	            Password Confirm: <span ng-show="updateForm.pwCheck.$error.pwMatch">Does not match new password</span>
+	            Password Check: <span ng-show="updateForm.pwCheck.$error.pwMatch">Does not match new password</span>
 	        </label>
             <input type="password" class="form-control" id="pwCheck" name="pwCheck" placeholder="Re-type Password" ng-model="update.pwCheck" pw-match="update.newPassword">
 	    </div>
@@ -80,7 +79,7 @@
     	<!-- Current Password -->
 		<div id="password-group">
 			<label class="col-xs-12 input-error" for="currentPassword"> 
-				Current Password: <span ng-show="updateForm.currentPassword.$error.minlength">Must be at least 6 characters</span>
+				Current Password: <span class="text-danger" ng-show="updateForm.currentPassword.$error.minlength">Must be at least 6 characters</span>
 			</label>
 			<div class="input-group col-xs-12">
 		        <span class="input-group-addon">

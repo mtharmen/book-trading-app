@@ -1,5 +1,5 @@
 var LocalStrategy = require('passport-local').Strategy;
-require('dotenv').config()
+require('dotenv').config();
 
 var User = require('../config/models/user');
 
@@ -24,12 +24,12 @@ module.exports = function(passport, ip, port) {
     },
     function(req, username, password, done) {
 
-        var query = {}
+        var query = {};
 
         if (username.indexOf('@') < 0) {
-            query = { username : username }
+            query = { username : username };
         } else {
-            query = { 'local.email' : username.toLowerCase() }
+            query = { 'local.email' : username.toLowerCase() };
         }
 
         process.nextTick(function() {
@@ -39,7 +39,7 @@ module.exports = function(passport, ip, port) {
                 }
                 if (!user) {
                     if (query.username) {
-                        return done(null, false, { message: ['Username not registered'] })
+                        return done(null, false, { message: ['Username not registered'] });
                     } else {
                         return done(null, false, { message: ['Email not registered'] });
                     }
@@ -65,7 +65,7 @@ module.exports = function(passport, ip, port) {
     function(req, username, password, done) {
 
         var email = req.body.email.toLowerCase();
-        var username = req.body.username;
+        // username = req.body.username;
 
         process.nextTick(function() {
             if (!req.user) {
@@ -74,11 +74,11 @@ module.exports = function(passport, ip, port) {
 
                 Promise.all([emailSearch, usernameSearch])
                 .then(function(data) {
-                    var emailCheck = data[0]
-                    var usernameCheck = data[1]
-                    var message = dupeCheck(emailCheck, usernameCheck)
+                    var emailCheck = data[0];
+                    var usernameCheck = data[1];
+                    var message = dupeCheck(emailCheck, usernameCheck);
                     if (message.length) { // Checking if username or email is taken
-                        return done(null, false, { message: message })
+                        return done(null, false, { message: message });
                     } else {
                         var newUser                 = new User();
 
@@ -99,15 +99,15 @@ module.exports = function(passport, ip, port) {
 
 
                         newUser.save(function(err) {
-                            if (err) { return done(err) };
+                            if (err) { return done(err); }
                             return done(null, newUser);
                         });
                     }
                 })
                 .catch(function(err) {
-                    console.error(err)
-                    return done(err)
-                })
+                    console.error(err);
+                    return done(err);
+                });
             } else {
                 return done(null, req.user);
             }
@@ -116,16 +116,16 @@ module.exports = function(passport, ip, port) {
 
     }));
 
-}
+};
 
 var dupeCheck = function(email, username) {
     var message = [];
 
     if (email) {
-        message.push('Email already taken')
+        message.push('Email already taken');
     }
     if (username) {
-        message.push('Username already taken')
+        message.push('Username already taken');
     }
-    return message
-}
+    return message;
+};
