@@ -1,0 +1,14 @@
+<button class="btn btn-primary" ng-click="getOffers()">{{myOffers.length}} Offers <span class="badge" ng-show="offerResponses">New</span></button>
+<button class="btn btn-primary" ng-click="getRequests()">{{myRequests.length}} Requests <span class="badge" ng-show="newRequests">New</span></button>
+
+<div ng-repeat="tradeOffer in myOffers" ng-show="showOffers" class="well">
+	<img src="imgs/{{tradeOffer.offer.ISBN}}.png" />
+	<i class="fa fa-exchange" aria-hidden="true"></i>
+	<img src="imgs/{{tradeOffer.request.ISBN}}.png" />
+</div>
+
+<div ng-repeat="tradeRequest in myRequests" ng-show="showRequests" class="well">
+	<img src="imgs/{{tradeRequest.offer.ISBN}}.png" />
+	<i class="fa fa-exchange" aria-hidden="true"></i>
+	<img src="imgs/{{tradeRequest.request.ISBN}}.png" />
+</div>

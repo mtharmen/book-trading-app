@@ -17,11 +17,14 @@
   },
   "homepage": "https://github.com/mtharmen/book-trading-app#readme",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "dotenv": "^2.0.0",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "mongoose": "^4.6.8",
     "passport": "^0.3.2",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "request": "^2.79.0",
+    "request-promise-native": "^1.0.3"
   }
 }

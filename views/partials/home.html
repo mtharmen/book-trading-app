@@ -1,0 +1,13 @@
+<h1>Home</h1>
+
+<div class="col-xs-2 col-xs-offset-5" ng-show="loading"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
+
+
+<!-- TODO: Add Search -->
+<div class="row">
+	<div ng-repeat="book in library" ng-show="!loading" class="col-md-2 col-xs-4 book-cover">
+		<img src={{book.image}} class="center-block img-responsive" ng-click="moreDetails(book)" />
+	</div>
+</div>
+
+{{test}}

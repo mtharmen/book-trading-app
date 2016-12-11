@@ -1,0 +1,30 @@
+
+<img src="{{book.image}}" class="center-block img-responsive" ng-click="moreDetails(book, 'remove')" />
+<div class="row">
+	<div class="col-xs-4">
+		<h1 class="text-center">Offer</h1>
+		<img src="{{bookOffer.image}}" class="center-block img-responsive"/>
+	</div>
+	<div class="col-xs-4">
+		<h1 class="text-center">For</h1>
+	</div>
+	<div class="col-xs-4">
+		<h1 class="text-center">Request</h1>
+		<img src="{{pending.book.image}}" class="center-block img-responsive"/>
+	</div>
+</div>
+
+<div class="col-xs-4 col-xs-offset-4">
+	<button class="btn btn-success text-center col-xs-12" ng-show="bookOffer._id" ng-click="initiateTrade(bookOffer, pending.book)">Make Trade</button>
+</div>
+
+
+<hr class="col-xs-12" />
+
+<div class="row">
+	<div ng-repeat="book in myBooks" class="col-md-2 col-xs-4 book-cover">
+		<img src="{{book.image}}" class="center-block img-responsive" ng-click="offer(book)" />
+	</div>
+<!-- 	<div class="col-xs-2 col-xs-offset-5" ng-show="loading"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
+	<div ng-if="!library.length && !loading" class="book-cover text-center"><h1>Your library is empty</h1></div> -->
+</div>

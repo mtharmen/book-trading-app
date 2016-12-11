@@ -1,0 +1,32 @@
+<h1>My Books</h1>
+
+<div class="row">
+	<div ng-repeat="book in myBooks" class="col-md-2 col-xs-4 book-cover">
+		<img src="{{book.image}}" class="center-block img-responsive" ng-click="moreDetails(book, 'remove')" />
+	</div>
+<!-- 	<div class="col-xs-2 col-xs-offset-5" ng-show="loading"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
+	<div ng-if="!library.length && !loading" class="book-cover text-center"><h1>Your library is empty</h1></div> -->
+</div>
+
+<hr class="col-xs-12" />
+
+<h1>Add Book</h1>
+
+<div class="col-xs-10 col-xs-offset-1">
+	<div class="input-group">
+		<span class="input-group-btn">
+			<button class="btn btn-default" type="button" ng-click="search(query)"><i class="fa fa-search" aria-hidden="true"></i></button>
+		</span>
+		<input type="text" class="form-control" placeholder="Search" ng-model="query.title">
+	</div>
+</div>
+
+<hr class="col-xs-12" />
+
+<div class="col-xs-2 col-xs-offset-5" ng-show="loading"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
+
+<div class="row">
+	<div ng-repeat="book in searchResults" ng-show="!loading" class="col-md-2 col-xs-4 book-cover">
+		<img src={{book.image}} class="center-block img-responsive" ng-click="moreDetails(book, 'add')" />
+	</div>
+</div>

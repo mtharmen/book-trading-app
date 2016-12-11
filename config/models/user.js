@@ -1,19 +1,25 @@
 var mongoose = require('mongoose');
+var bcrypt   = require('bcrypt-nodejs');
 
 var userSchema = new mongoose.Schema({
-    firstname           : String,
-    lastname            : String,
-    local : {
+    username  : String,
+    local     : {
         email           : String,
-        password        : String,    
+        password        : String   
     },
-    address : {
-        homeNumber      : Number,
-        street          : String,
+    name      : {
+        first           : String,
+        last            : String,
+        public          : Boolean // whether or not name is publicly visible
+    },
+    address   : {
+        // homeNumber      : Number,
+        // street          : String,
         city            : String,
         province        : String,
-        country         : String,
-        postalCode      : String,
+        // country         : String,
+        // postalCode      : String,
+        public          : Boolean // whether or not location is publicly visible
     }
 });
 

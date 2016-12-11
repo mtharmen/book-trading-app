@@ -1,0 +1,109 @@
+<div class="col-xs-10 col-xs-offset-1" id="error-update">
+  <div uib-alert class="alert alert-danger" ng-show="errMsg"><h4 class="text-center">{{errMsg}}</h4></div>
+  <div uib-alert class="alert alert-success" ng-show="successMsg"><h4 class="text-center">{{successMsg}}</h4></div>
+</div>
+
+<form class="form-horizontal row" name="updateForm" id="updateForm"
+      ng-model-options="{ allowInvalid: true, debounce: 200 }" novalidate>
+  
+  <div class="form-group has-feedback">
+
+  	<div class="col-xs-10 col-xs-offset-1" id="name-row">
+	  	<!--First Name-->
+	    <div id="firstname-group" class="col-md-6 col-xs-12">
+	      <label class="col-xs-12" for="firstname"> 
+	        First Name:
+	      </label>
+	      <input type="text" class="form-control" id="firstname" name="firstname"
+				 ng-model="update.firstname">
+	    </div>
+
+	    <!--Last Name-->
+	    <div id="lastname-group" class="col-md-6 col-xs-12">
+	      <label class="col-xs-12" for="lastname"> 
+	        Last Name:
+	      </label>
+	      <input type="text" class="form-control" id="lastname" name="lastname"
+				 ng-model="update.lastname">
+	    </div>
+   	</div>
+
+   	<hr class="col-xs-10 col-xs-offset-1" />
+
+   	<div class="col-xs-10 col-xs-offset-1" id="location-row">
+	    <!--Province/Territory-->
+	    <div id="province-group" class="col-md-6 col-xs-12">
+			<label class="col-xs-12" for="firstname"> 
+				Province/Territory:
+			</label>
+	      <!-- <input type="text" class="form-control" id="province" name="province"
+				 placeholder="Province/Territory"
+				 ng-model="update.province"> -->
+			<select class="form-control" id="province" name="province" ng-model="update.province">
+				<option ng-repeat="place in locations" value="{{place}}">{{place}}</option>
+			</select>
+	    </div>
+
+	    <!--City-->
+	    <div id="city-group" class="col-md-6 col-xs-12">
+	      <label class="col-xs-12" for="city"> 
+	        City:
+	      </label>
+	      <input type="text" class="form-control" id="city" name="city"
+				 ng-model="update.city">
+	    </div>
+    </div>
+
+    <hr class="col-xs-10 col-xs-offset-1" />
+
+    <div class="col-xs-10 col-xs-offset-1" id="new-password-row">
+    	<!--New Password-->
+	    <div id="new-password-group" class="col-md-6 col-xs-12">
+			<label class="col-xs-12 input-error" for="newPassword"> 
+			New Password: <span ng-show="updateForm.newPassword.$error.minlength">Must be at least 6 characters</span>
+			</label>
+			<input type="password" class="form-control" id="new-password" name="newPassword" placeholder="New Password" ng-model="update.newPassword" ng-minlength="6">
+	    </div>
+
+	    <!-- New Password Check -->
+		<div id="pwCheck-group" class="col-md-6 col-xs-12">
+	        <label class="col-xs-12 input-error" for="pwCheck">
+	            Password Confirm: <span ng-show="updateForm.pwCheck.$error.pwMatch">Does not match new password</span>
+	        </label>
+            <input type="password" class="form-control" id="pwCheck" name="pwCheck" placeholder="Re-type Password" ng-model="update.pwCheck" pw-match="update.newPassword">
+	    </div>
+	</div>
+
+	<hr class="col-xs-10 col-xs-offset-1" />
+
+    <div class="col-xs-6 col-xs-offset-3" id="submit-group">
+    	<!-- Current Password -->
+		<div id="password-group">
+			<label class="col-xs-12 input-error" for="currentPassword"> 
+				Current Password: <span ng-show="updateForm.currentPassword.$error.minlength">Must be at least 6 characters</span>
+			</label>
+			<div class="input-group col-xs-12">
+		        <span class="input-group-addon">
+		          <i class="fa fa-key" aria-hidden="true"></i>
+		        </span>
+		        <input type="password" class="form-control" id="current-password" name="currentPassword"
+		               placeholder="Password to validate" required
+		               ng-model="update.currentPassword">
+	        </div>
+		</div>
+
+		<button class="btn btn-primary col-xs-12" ng-click="submit(update, defaults)" id="update-submit" 
+				ng-disabled="update.firstname === defaults.firstname && 
+							 update.lastname === defaults.lastname && 
+							 update.province === defaults.province && 
+							 update.city === defaults.city &&
+							 !update.newPassword
+							 || updateForm.$invalid">
+			Update
+		</button>
+		<p class="text-center" ng-show="update.firstname === defaults.firstname && update.lastname === defaults.lastname && update.province === defaults.province && update.city === defaults.city && !update.newPassword || updateForm.$invalid">
+			Change a setting above and enter your current password to update
+		</p>
+	</div>
+
+ </form>
