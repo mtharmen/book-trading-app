@@ -472,8 +472,13 @@ bookApp.controller('myTradesCtrl', ['$scope', 'bookFactory', function($scope, bo
   $scope.hideTrade = function(trade, type) {
     bookFactory.hideTrade(trade._id, type)
       .then(function(response) {
-        if (type === 'offer') { trade.showOffer = false; }
-        else if (type === 'request') { trade.showRequest = false; }
+        if (type === 'offer') { 
+          $scope.myOffers       = $scope.myOffers.filter(function(myTrade) { return myTrade._id !== trade._id; });
+          $scope.offerResponses += -1;
+        }
+        else if (type === 'request') { 
+          $scope.myRequests  = $scope.myRequests.filter(function(myTrade) { return myTrade._id !== trade._id; });
+        }
       }, function(response) {
         console.error(response.status + ':' + response.statusText);
         window.location = '/error';
@@ -539,14 +544,10 @@ bookApp.controller('newTradeCtrl', ['$scope', 'bookFactory', 'modalFactory', 'pe
 // MY BOOKS
 bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', function($scope, bookFactory, modalFactory) {
 
-  $scope.loading = true;
-
   bookFactory.getBooks($scope.current.user.username)
     .then(function(response) {
-        $scope.loading = false;
         $scope.myBooks = response.data;
       }, function (response) {
-        $scope.loading = false;
         console.error(response.status + ':' + response.statusText);
         window.location = '/error';
       });
@@ -555,13 +556,13 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
     var valid = /^[A-Za-z0-9\s\-_,\.;:()]+$/;
 
     if (query.title.match(valid)) {
-      $scope.loading = true;
+      $scope.searching = true;
       bookFactory.search(query)
         .then(function(response) {
-          $scope.loading = false;
+          $scope.searching = false;
           $scope.searchResults = response.data;
         }, function(response) {
-          $scope.loading = false;
+          $scope.searching = false;
           console.error(response.status + ':' + response.statusText);
           window.location = '/error';
         });
@@ -614,14 +615,6 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
     );
     
   };
-
-  $scope.searchResults = [
-    {"title":"Harry Potter and the Cursed Child – Parts One and Two (Special Rehearsal Edition)","authors":["J.K. Rowling","John Tiffany","Jack Thorne"],"ISBN":"1781107041","image":"http://books.google.com/books/content?id=tcSMCwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"},
-    {"title":"Harry Potter and the Sorcerer's Stone","authors":["J.K. Rowling"],"ISBN":"1781100489","image":"http://books.google.com/books/content?id=wrOQLV6xB-wC&printsec=frontcover&img=1&zoom=1&source=gbs_api"},
-    {"title":"Harry Potter and the Deathly Hallows","authors":["J. K. Rowling"],"ISBN":"1408855712","image":"http://books.google.com/books/content?id=I5nHBAAAQBAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"},
-    {"title":"Harry Potter and the Order of the Phoenix","authors":["J. K. Rowling"],"ISBN":"0545582970","image":"http://books.google.com/books/content?id=Y0HbmAEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"},
-    {"title":"Harry Potter Coloring Book","authors":["Inc. Scholastic"],"ISBN":"1338029991","image":"http://books.google.com/books/content?id=lMM4jgEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"}
-  ];
 }]);
 
 // SETTINGS

@@ -1,28 +1,79 @@
-<button class="btn btn-primary" ng-click="getOffers()"><span class="badge" ng-show="offerResponses">{{offerResponses}} New</span> Offers</button>
-<button class="btn btn-primary" ng-click="getRequests()"><span class="badge" ng-show="newRequests">{{newRequests}} New</span> Requests</button>
+<button class="btn btn-primary" ng-click="getOffers()"><span class="badge" ng-show="offerResponses">{{offerResponses}} New Responses</span> Your Offers</button>
+<button class="btn btn-primary" ng-click="getRequests()"><span class="badge" ng-show="newRequests">{{newRequests}} New</span> Requests For You</button>
 
-<div ng-show="showOffers">
-	<div ng-repeat="tradeOffer in myOffers" ng-show="myOffers.length" class="well">
-		<img src="imgs/{{tradeOffer.offer.ISBN}}.png" />
-		<i class="fa fa-exchange" aria-hidden="true"></i>
-		<img src="imgs/{{tradeOffer.request.ISBN}}.png" />
-		<button class="btn btn-danger" ng-click="removeTrade(tradeOffer, 'offer')">Remove</button>
-		<button class="btn btn-warning" ng-click="hideTrade(tradeRequest, 'request')" ng-show="tradeRequest.status === 'accepted'">Hide</button>
-		{{tradeOffer.status}}
+<div class="col-xs-8 col-xs-offset-2" ng-show="showOffers">
+	<div ng-repeat="tradeOffer in myOffers" ng-show="myOffers.length" class="panel row"
+		 ng-class="{'panel-default': tradeOffer.status === 'pending', 'panel-danger': tradeOffer.status === 'rejected', 'panel-success': tradeOffer.status === 'accepted'}">
+		<div class="panel-heading text-center trade-header">
+			<span class="col-xs-4">
+				You 
+				<span ng-show="tradeOffer.status === 'pending'">are offering</span>
+				<span ng-show="tradeOffer.status !== 'pending'">offered</span>
+			</span>
+			<span class="col-xs-4">
+				for
+			</span>
+			<span class="col-xs-4">
+				{{tradeOffer.request.owner}}'s
+			</span>
+		</div>
+		<div class="panel-body">
+			<div class="col-xs-4">
+				<img class="center-block img-responsive" src="imgs/{{tradeOffer.offer.ISBN}}.png" />
+			</div>
+			<div class="col-xs-4 text-center">
+				<i class="fa fa-exchange fa-5x trade-icon" aria-hidden="true"></i>
+			</div>
+			<div class="col-xs-4">
+				<img class="center-block img-responsive" src="imgs/{{tradeOffer.request.ISBN}}.png" />
+			</div>
+		</div>
+		<div class="panel-footer text-center">
+			<span class="text-danger" ng-show="tradeOffer.status === 'rejected'">The trade was rejected </span>
+			<span class="text-success" ng-show="tradeOffer.status === 'accepted'">The trade was accepted </span>
+			<span ng-show="tradeOffer.status === 'pending'">The trade is waiting for a response </span>
+			<button class="btn btn-danger btn-sm" ng-click="removeTrade(tradeOffer, 'offer')" ng-show="tradeOffer.status === 'pending'">Cancel</button>
+			<button class="btn btn-warning btn-sm" ng-click="hideTrade(tradeOffer, 'offer')" ng-hide="tradeOffer.status === 'pending'">Remove</button>
+		</div>
 	</div>
-	<div ng-hide="myOffers.length">You have made no offers</div>
+	<h2 class="text-center" ng-hide="myOffers.length">You have no offers</h2>
 </div>
 
-<div ng-show="showRequests">
-	<div ng-repeat="tradeRequest in myRequests" ng-show="myRequests.length" class="well">
-		<img src="imgs/{{tradeRequest.offer.ISBN}}.png" />
-		<i class="fa fa-exchange" aria-hidden="true"></i>
-		<img src="imgs/{{tradeRequest.request.ISBN}}.png" />
-		<button class="btn btn-danger" ng-click="removeTrade(tradeRequest, 'request')">Remove</button>
-		<button class="btn btn-warning" ng-click="hideTrade(tradeRequest, 'request')" ng-show="tradeRequest.status !== 'pending'">Hide</button>
-		<button class="btn btn-success" ng-click="requestResponse(tradeRequest, true)" ng-show="tradeRequest.status === 'pending'">Accept</button>
-		<button class="btn btn-warning" ng-click="requestResponse(tradeRequest, false)" ng-show="tradeRequest.status === 'pending'">Reject</button>
-		{{tradeRequest.status}}
+<div class="col-xs-8 col-xs-offset-2" ng-show="showRequests">
+	<div ng-repeat="tradeRequest in myRequests" ng-show="myRequests.length" class="panel row" 
+		 ng-class="{'panel-default': tradeRequest.status === 'pending', 'panel-danger': tradeRequest.status === 'rejected', 'panel-success': tradeRequest.status === 'accepted'}">
+		<div class="panel-heading text-center trade-header">
+			<span class="col-xs-4">
+				{{tradeRequest.request.owner}} 
+				<span ng-show="tradeRequest.status === 'pending'">is offering</span>
+				<span ng-show="tradeRequest.status !== 'pending'">offered</span>
+			</span>
+			<span class="col-xs-4">
+				for
+			</span>
+			<span class="col-xs-4">
+				your
+			</span>
+		</div>
+		<div class="panel-body">
+			<div class="col-xs-4">
+				<img class="center-block img-responsive" src="imgs/{{tradeRequest.offer.ISBN}}.png" />
+			</div>
+			<div class="col-xs-4 text-center">
+				<i class="fa fa-exchange fa-5x trade-icon" aria-hidden="true"></i>
+			</div>
+			<div class="col-xs-4">
+				<img class="center-block img-responsive" src="imgs/{{tradeRequest.request.ISBN}}.png" />
+			</div>
+		</div>
+		<div class="panel-footer text-center">
+			<span class="text-danger" ng-show="tradeRequest.status === 'rejected'">You rejected the trade </span>
+			<span class="text-success" ng-show="tradeRequest.status === 'accepted'">You accepted the trade </span>
+			<button class="btn btn-warning btn-sm" ng-click="hideTrade(tradeRequest, 'request')" ng-hide="tradeRequest.status === 'pending'">Remove</button>
+			<span ng-show="tradeRequest.status === 'pending'">The trade is waiting for your response </span>
+			<button class="btn btn-success btn-sm" ng-click="requestResponse(tradeRequest, true)" ng-show="tradeRequest.status === 'pending'">Accept</button>
+			<button class="btn btn-danger btn-sm" ng-click="requestResponse(tradeRequest, false)" ng-show="tradeRequest.status === 'pending'">Reject</button>
+		</div>
 	</div>
-	<div ng-hide="myRequests.length">You have no requests</div>
+	<h2 class="text-center" ng-hide="myRequests.length">You have no requests</h2>
 </div>

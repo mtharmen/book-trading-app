@@ -38,14 +38,15 @@ module.exports = function(app) {
 		request(options)
 			.then(function(data) {
 				var booksInfo = data.items;
-				var maxBooks = booksInfo.length <= 6 ? booksInfo.length : 6;
+				var maxBooks = data.totalItems <= 6 ? data.totalItems : 6;
 				var bookList = [];
 				// TODO: convert this .map?
 				for (var i=0; i < maxBooks; i++) {
 					var book = {};
 					// If the book has an ISBN, add that book
 					var ISBNs = booksInfo[i].volumeInfo.industryIdentifiers;
-					if (ISBNs) {
+					var imageLink = booksInfo[i].volumeInfo.imageLinks;
+					if (ISBNs && imageLink) {
 						book.title       = booksInfo[i].volumeInfo.title;
 						book.authors     = booksInfo[i].volumeInfo.authors;
 						book.ISBN        = ISBNs[0].type == 'ISBN_10' ? ISBNs[0].identifier : ISBNs[1].identifier;
@@ -213,8 +214,14 @@ module.exports = function(app) {
 						status: 'pending'
 					};
 					promises.push(Trade.update(query, {status: 'rejected'}).exec());
+
+					// TODO: Switch the owners of the books?
+					// promises.push(Book.findOneAndUpdate({owner: trade.offer.owner, ISBN: trade.offer.ISBN}, {owner: trade.request.owner}).exec())
+					// Problem?: After switching the first book, the second person might own two copies of the same book
+					// promises.push(Book.findOneAndUpdate({owner: trade.request.owner, ISBN: trade.request.ISBN}, {owner: trade.offer.owner}).exec())
 				}
 				promises.push(trade.save());
+				
 				Promise.all(promises)
 					.then(function(data) {
 						res.send('Trade updated');
@@ -254,9 +261,8 @@ module.exports = function(app) {
 				else if (type === 'request') { 
 					trade.showRequest = false;
 				}
-
 				
-				if (trade.showOffer === trade.showRequest) {
+				if (false) { // trade.showOffer === trade.showRequest) {
 					// Both users are hiding the trade, so just remove it
 					Trade.remove({ _id: id }, function(err) {
 						if (err) { return next(err); }

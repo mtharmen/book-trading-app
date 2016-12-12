@@ -5,8 +5,8 @@
 
 <!-- TODO: Add Search -->
 <div class="row">
-	<div ng-repeat="book in library" ng-show="!loading" class="col-md-2 col-xs-4 book-cover">
-		<img src={{book.image}} class="center-block img-responsive" ng-click="moreDetails(book)" />
+	<div ng-repeat="book in library" ng-show="!loading" class="col-md-2 col-xs-3 book-cover">
+		<img src={{book.image}} class="center-block img-responsive well" ng-click="moreDetails(book)" />
 	</div>
 </div>
 
