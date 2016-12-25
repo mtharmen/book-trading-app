@@ -26,7 +26,7 @@ module.exports = function(app, base) {
 	// Close MongoDB connection
 	process.on('SIGINT', function() {  
 	    db.close(function () { 
-	        console.log('Closing connection to votingAppDB'); 
+	        console.log('Closing connection to bookTradingAppDB'); 
 	        process.exit(0); 
 	    }); 
 	});
@@ -41,7 +41,7 @@ module.exports = function(app, base) {
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: true }));
 
-	require('./passport')(passport, ip, port);
+	require('./passport')(passport);
 
 	app.use(session({
 	    secret: process.env.sessionSecret,

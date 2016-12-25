@@ -3,7 +3,7 @@ require('dotenv').config();
 
 var User = require('../config/models/user');
 
-module.exports = function(passport, ip, port) {
+module.exports = function(passport) {
 
     passport.serializeUser(function(user, done) {
         done(null, user.id);

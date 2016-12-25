@@ -234,7 +234,7 @@ bookApp.controller('navCtrl', ['$scope', 'accountFactory', 'modalFactory', funct
       accountFactory.redirect('/error');
     });
 
-  $scope.newUser = function () {
+  $scope.newUser = function() {
               
     var modalInstance = modalFactory.login($scope);
 
