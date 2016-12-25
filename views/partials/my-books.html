@@ -4,8 +4,7 @@
 	<div ng-repeat="book in myBooks" class="col-md-2 col-xs-3 book-cover">
 		<img src="{{book.image}}" class="center-block img-responsive well" ng-click="moreDetails(book, 'remove')" />
 	</div>
-<!-- 	<div class="col-xs-2 col-xs-offset-5" ng-show="loading"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
-	<div ng-if="!library.length && !loading" class="book-cover text-center"><h1>Your library is empty</h1></div> -->
+	<div ng-show="!myBooks.length" class="text-center">You have added no books yet</div>
 </div>
 
 <hr class="col-xs-12" />
@@ -31,4 +30,4 @@
 	</div>
 </div>
 
-<div ng-show="!searching && searchResults !== undefined" class="text-center">No Books Found</div>
+<div ng-show="!searching && searchResults !== undefined && !searchResults.length" class="text-center">No Books Found</div>

@@ -1,5 +1,7 @@
-<button class="btn btn-primary" ng-click="getOffers()"><span class="badge" ng-show="offerResponses">{{offerResponses}} New Responses</span> Your Offers</button>
-<button class="btn btn-primary" ng-click="getRequests()"><span class="badge" ng-show="newRequests">{{newRequests}} New</span> Requests For You</button>
+<div id="trade-buttons">
+	<button class="btn btn-primary" ng-click="getOffers()"><span class="badge" ng-show="offerResponses">{{offerResponses}} New Responses</span> Your Offers</button>
+	<button class="btn btn-primary" ng-click="getRequests()"><span class="badge" ng-show="newRequests">{{newRequests}} New</span> Requests For You</button>
+</div>
 
 <div class="col-xs-8 col-xs-offset-2" ng-show="showOffers">
 	<div ng-repeat="tradeOffer in myOffers" ng-show="myOffers.length" class="panel row"

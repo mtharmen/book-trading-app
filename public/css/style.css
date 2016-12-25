@@ -165,3 +165,7 @@ label {
 .trade-icon {
   margin-top: 50px
 }
+
+#trade-buttons {
+  margin-bottom: 10px;
+}

@@ -300,7 +300,7 @@ bookApp.controller('loginModalCtrl', ['$scope', '$uibModalInstance', '$http', 'a
       },
       function errorCB (response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        accountFactory.redirect('/error');
     });
   };
   
@@ -317,7 +317,7 @@ bookApp.controller('loginModalCtrl', ['$scope', '$uibModalInstance', '$http', 'a
       },
       function errorCB (response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        accountFactory.redirect('/error');
     });  
   };
   
@@ -377,7 +377,7 @@ bookApp.controller('homeCtrl', ['$scope', 'bookFactory', 'modalFactory', '$locat
       }, function (response) {
         $scope.loading = false;
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        bookFactory.redirect('/error');
       });
 
   $scope.moreDetails = function(book, type) {
@@ -412,7 +412,7 @@ bookApp.controller('myTradesCtrl', ['$scope', 'bookFactory', function($scope, bo
         $scope.offerResponses = $scope.myOffers.filter(function(trade) { return trade.status !== 'pending'; }).length;
       }, function (response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        bookFactory.redirect('/error');
       });
   };
   
@@ -424,7 +424,7 @@ bookApp.controller('myTradesCtrl', ['$scope', 'bookFactory', function($scope, bo
         $scope.newRequests = $scope.myRequests.filter(function(trade) { return trade.status === 'pending'; }).length;
       }, function (response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        bookFactory.redirect('/error');
       });
   };
   
@@ -453,7 +453,7 @@ bookApp.controller('myTradesCtrl', ['$scope', 'bookFactory', function($scope, bo
         }
       }, function (response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        bookFactory.redirect('/error');
       });
   };
 
@@ -465,7 +465,7 @@ bookApp.controller('myTradesCtrl', ['$scope', 'bookFactory', function($scope, bo
         getRequests();
       }, function(response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        bookFactory.redirect('/error');
       });
   };
 
@@ -481,7 +481,7 @@ bookApp.controller('myTradesCtrl', ['$scope', 'bookFactory', function($scope, bo
         }
       }, function(response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        bookFactory.redirect('/error');
       });
   };
 
@@ -505,7 +505,7 @@ bookApp.controller('newTradeCtrl', ['$scope', 'bookFactory', 'modalFactory', 'pe
       }, function (response) {
         $scope.loading = false;
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        bookFactory.redirect('/error');
       });
 
   $scope.offer = function(book) {
@@ -534,7 +534,7 @@ bookApp.controller('newTradeCtrl', ['$scope', 'bookFactory', 'modalFactory', 'pe
           var modalInstance = modalFactory.confirm('Trade already exists');
         } else {
           console.error(response.status + ':' + response.statusText);
-          window.location = '/error';
+          bookFactory.redirect('/error');
         }
       });
   };
@@ -549,13 +549,18 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
         $scope.myBooks = response.data;
       }, function (response) {
         console.error(response.status + ':' + response.statusText);
-        window.location = '/error';
+        bookFactory.redirect('/error');
       });
 
+  $scope.query = {};
+  
   $scope.search = function(query) {
     var valid = /^[A-Za-z0-9\s\-_,\.;:()]+$/;
 
-    if (query.title.match(valid)) {
+    if (!query.title) {
+      var modalInstance = modalFactory.confirm('Please provide a title before searching');
+    }
+    else if ( query.title.match(valid)) {
       $scope.searching = true;
       bookFactory.search(query)
         .then(function(response) {
@@ -564,7 +569,7 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
         }, function(response) {
           $scope.searching = false;
           console.error(response.status + ':' + response.statusText);
-          window.location = '/error';
+          bookFactory.redirect('/error');
         });
     } else {
       var modalInstance = modalFactory.confirm('Invalid Character Used');
@@ -592,7 +597,7 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
               $scope.myBooks.push(response.data);
             }, function errorCB (response) {
               console.error(response.status + ':' + response.statusText);
-              window.location = '/error';
+              bookFactory.redirect('/error');
             });
 
         } else if (response === 'remove') {
@@ -604,7 +609,7 @@ bookApp.controller('myBooksCtrl', ['$scope', 'bookFactory', 'modalFactory', func
               });
             }, function errorCB (response) {
               console.error(response.status + ':' + response.statusText);
-              window.location = '/error';
+              bookFactory.redirect('/error');
             });
 
         }
@@ -652,7 +657,7 @@ bookApp.controller('settingsCtrl', ['$scope', 'accountFactory', function($scope,
             }
           }, function errorCB (response) {
             console.error(response.status + ':' + response.statusText);
-            window.location = '/error';
+            accountFactory.redirect('/error');
           });
       // }
     };

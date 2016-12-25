@@ -1,5 +1,3 @@
-<h1>Home</h1>
-
 <div class="col-xs-2 col-xs-offset-5" ng-show="loading"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
 
 
@@ -8,6 +6,7 @@
 	<div ng-repeat="book in library" ng-show="!loading" class="col-md-2 col-xs-3 book-cover">
 		<img src={{book.image}} class="center-block img-responsive well" ng-click="moreDetails(book)" />
 	</div>
+	<div ng-show="!library.length" class="text-center">No Books Found</div>
 </div>
 
 {{test}}
