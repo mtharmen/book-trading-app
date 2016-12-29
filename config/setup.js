@@ -15,18 +15,19 @@ module.exports = function(app, base) {
 	
 	// Mongoose setup
 	mongoose.Promise = global.Promise;
-
-	mongoose.connect('mongodb://' + ip + '/bookTradingAppDB');
+	var mongodbUrl = process.env.MONGODB_URL || 'mongodb://' + ip;
+		
+	mongoose.connect(mongodbUrl + '/mtharmen-book-trading-app');
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function() {
-	    console.log('Connected to bookTradingAppDB');
+	    console.log('Connected to mtharmen-book-trading-app');
 	});
 
 	// Close MongoDB connection
 	process.on('SIGINT', function() {  
 	    db.close(function () { 
-	        console.log('Closing connection to bookTradingAppDB'); 
+	        console.log('Closing connection to mtharmen-book-trading-app'); 
 	        process.exit(0); 
 	    }); 
 	});
@@ -44,7 +45,7 @@ module.exports = function(app, base) {
 	require('./passport')(passport);
 
 	app.use(session({
-	    secret: process.env.sessionSecret,
+	    secret: process.env.SESSION_SECRET,
 	    resave: true,
 	    store : new MongoStore({
 	        mongooseConnection: mongoose.connection
