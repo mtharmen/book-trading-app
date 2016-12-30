@@ -5,7 +5,7 @@ bookApp.factory('accountFactory', ['$http', '$location', function($http, $locati
 
   var storedUser = { user: undefined };
 
-  return {    
+  return {
     fetchUser: function() {
       return $http.get('/auth/user');
     },
@@ -495,7 +495,7 @@ bookApp.controller('newTradeCtrl', ['$scope', 'bookFactory', 'modalFactory', 'pe
   $scope.loading = true;
 
   $scope.bookOffer = {
-    image: 'http://placehold.it/128x192'
+    image: '/imgs/placeholder.png'
   };
 
   bookFactory.getBooks($scope.current.user.username)
