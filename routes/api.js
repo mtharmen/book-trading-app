@@ -71,7 +71,7 @@ module.exports = function(app) {
 		var title   = req.body.title;
 		var authors = req.body.authors;
 
-		var path = './public/imgs/' + ISBN + '.png';
+		var path = '../public/imgs/' + ISBN + '.png';
 
 		// Checking if a copy already exists
 		var imagePromise = new Promise(function(resolve, reject) {
