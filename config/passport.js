@@ -3,6 +3,8 @@ require('dotenv').config();
 
 var User = require('../config/models/user');
 
+// Used https://scotch.io/tutorials/easy-node-authentication-twitter as a reference
+
 module.exports = function(passport) {
 
     passport.serializeUser(function(user, done) {
