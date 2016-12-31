@@ -34,9 +34,7 @@ module.exports = function(passport) {
 
         process.nextTick(function() {
             User.findOne(query, function(err, user) {
-                if (err) {
-                    return done(err);
-                }
+                if (err) { return done(err); }
                 if (!user) {
                     if (query.username) {
                         return done(null, false, { message: ['Username not registered'] });
