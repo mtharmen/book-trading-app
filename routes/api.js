@@ -63,7 +63,8 @@ module.exports = function(app) {
 			.catch(function(err) { return next(err); });
 	});
 
-	app.post('/api/addBook', function(req, res, next) {
+	// Doesn't work with Heroku since it spins up the server based on what's on GitHub
+	app.post('/api/addBookOld', function(req, res, next) {
 
 		console.log('Adding Book');
 
@@ -110,6 +111,26 @@ module.exports = function(app) {
 				return next(err);
 			});
 
+	});
+
+	app.post('/api/addBook', function(req, res, next) {
+
+		console.log('Adding Book');
+
+		var book = new Book({ 
+			ISBN      : req.body.ISBN,
+			title     : req.body.title,
+			authors   : req.body.authors,
+			image     : req.body.image,
+			owner     : req.user.username,
+			available : true
+		});
+
+		book.save(function(err){
+			if (err) { return next(err); }
+			console.log(req.body.title + ' saved.');
+			res.json(book);
+		});
 	});
 
 	app.post('/api/removeBook', function(req, res, next) {

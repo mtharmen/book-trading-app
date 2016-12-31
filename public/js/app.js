@@ -396,12 +396,6 @@ bookApp.controller('homeCtrl', ['$scope', 'bookFactory', 'modalFactory', '$locat
 
 }]);
 
-// PROFILE
-bookApp.controller('userCtrl', ['$scope', 'bookFactory', function($scope, bookFactory) {
-
-
-}]);
-
 // MY TRADES
 bookApp.controller('myTradesCtrl', ['$scope', 'bookFactory', function($scope, bookFactory) {
 
@@ -517,10 +511,12 @@ bookApp.controller('newTradeCtrl', ['$scope', 'bookFactory', 'modalFactory', 'pe
       offer   : {
         owner : offer.owner,
         ISBN  : offer.ISBN,
+        image : offer.image
       },
       request : {
         owner : request.owner,
         ISBN  : request.ISBN,
+        image : request.image
       }
     };
 
