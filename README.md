@@ -1,11 +1,30 @@
-# Free Code Camp Challenge: [Build a Book Trading App](https://www.freecodecamp.com/challenges/manage-a-book-trading-club)
+# vue-testing
 
-##User stories:
-1. I can view all books posted by every user.
-2. I can add a new book.
-3. I can update my settings to store my full name, city, and state.
-4. I can propose a trade and wait for the other user to accept the trade.
+> A Vue.js project
 
-##Possible Updates:
-1. Maybe surface the users location after a trade is accepted. Left out for now because this is a demo
-2. Ability to search by author or ISBN
+## Build Setup
+
+``` bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8080
+npm run dev
+
+# build for production with minification
+npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
+
+# run unit tests
+npm run unit
+
+# run e2e tests
+npm run e2e
+
+# run all tests
+npm test
+```
+
+For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
