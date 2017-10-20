@@ -1,13 +1,32 @@
 <template>
   <div>
-    <h1>Add a Book</h1>
-    <!-- TODO: add search by ISBN and author options -->
-    <form class="input-group" @submit.prevent="findBooks">
-      <input type="text" class="form-control" :placeholder="previous" maxlength="50" v-model="search">
-      <span class="input-group-btn">
-        <button class="btn btn-primary" type="submit">Search</button>
-      </span>
+    <h1>Search</h1>
+    <!-- TODO: make it so only title is shown by default with advanced showing the other options -->
+    <form @submit.prevent="findBooks">
+      <div class="input-group">
+        <span class="input-group-addon">
+          Title
+        </span>
+        <input type="text" class="form-control" :placeholder="previous.title" maxlength="50" v-model.trim="search.title">
+      </div>
+      
+      <div class="input-group">
+        <span class="input-group-addon">
+          Author
+        </span>
+        <input type="text" class="form-control" :placeholder="previous.author" maxlength="50" v-model.trim="search.author">
+      </div>
+
+      <div class="input-group">
+        <span class="input-group-addon">
+          ISBN
+        </span>
+        <input type="text" name="isbn" class="form-control" :placeholder="previous.isbn" maxlength="50" v-model.trim="search.isbn">
+      </div>
+      <!-- v-validate="{ regex: /^[Xx0-9]+$/ }" <span v-show="errors.has('isbn')" class="small text-danger">ISBN must only contain numbers or 'X'</span> -->
+      <button type="submit" class="btn btn-primary">Search</button>
     </form>
+
     <br />
     <app-loading v-show="submitting"></app-loading>
     <div class="alert alert-danger text-center" v-show="error && !submitting">
@@ -17,7 +36,7 @@
       <div v-show="searchResults.length">
         <app-book-grid :books="searchResults" :type="'add'"></app-book-grid>
       </div>
-      <div v-show="!searchResults.length && previous !== 'Enter a title'">No Books Found</div>
+      <div v-show="!searchResults.length && !pristine">No Books Found</div>
     </div>
   </div>
 </template>
@@ -37,48 +56,79 @@ export default {
   },
   data () {
     return {
-      search: '',
-      previous: 'Enter a title',
+      search: {
+        title: '',
+        author: '',
+        isbn: ''
+      },
+      previous: {
+        title: 'Enter a title',
+        author: 'Enter an author',
+        isbn: 'Enter an ISBN'
+      },
       submitting: false,
       error: '',
       bookStore: bookStore.store,
       searchResults: []
     }
   },
+  created () {
+    this.getBooks()
+  },
+  watch: {
+    '$route': function () {
+      this.getBooks()
+    }
+  },
+  computed: {
+    pristine () {
+      return this.previous.title === 'Enter a title' && this.previous.author === 'Enter an author' && this.previous.isbn === 'Enter an ISBN'
+    }
+  },
   methods: {
+    getBooks () {
+      getBooks$(userStore.user.username, 1)
+        .then(res => {
+          this.submitting = false
+          bookStore.fillBookStore(res.data)
+        })
+        .catch(err => {
+          this.submitting = false
+          this.error = err.message
+        })
+    },
     findBooks () {
       this.submitting = true
+      this.error = ''
       this.searchResults = []
-      searchBooks$(this.search.replace(' ', '+'))
+      const search = {}
+      Object.keys(this.search).forEach(key => {
+        search[key] = this.search[key].replace(' ', '+')
+      })
+      searchBooks$(search)
       .then(res => {
         this.submitting = false
-        this.previous = this.search
-        this.search = ''
+        this.clearSearch()
         this.searchResults = res.data
       })
       .catch(err => {
         this.submitting = false
-        const error = err.response ? err.response.data : 'Server is busy'
-        console.error(error)
-        this.error = error.message
+        this.clearSearch()
+        this.error = err.message
+      })
+    },
+    clearSearch () {
+      Object.keys(this.search).forEach(key => {
+        this.previous[key] = this.search[key] ? this.search[key] : this.previous[key]
+        this.search[key] = ''
       })
     }
-  },
-  beforeMount () {
-    // TODO: Change this so it only uses the ISBNs for comparison purposes
-    getBooks$(userStore.user.username, 1)
-    .then(res => {
-      this.loading = false
-      bookStore.fillBookStore(res.data)
-    })
-    .catch(err => {
-      this.loading = false
-      const error = err.response.data
-      console.error(error)
-    })
   }
 }
 </script>
 
 <style scoped>
+  .input-group-addon {
+    min-width: 75px;
+  }
 </style>

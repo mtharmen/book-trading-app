@@ -35,9 +35,9 @@
     </div>
     <div class="card-footer">
       <div class="pull-right" v-if="!trade.status">
-        <span class="text-danger mr-auto" v-if="error">{{ error }}</span>
+        <span class="text-danger mr-auto" v-if="trade.error">{{ trade.error }}</span>
         <!-- NOTE: If error isn't changed into a boolean, vue seemingly doesn't recognize the change when drawing elements? -->
-        <button class="btn btn-primary" :disabled="trade.offer.traded || !!error" @click="submit">Submit Trade</button>
+        <button class="btn btn-primary" :disabled="trade.offer.traded || !!trade.error" @click="submit">Submit Trade</button>
       </div>
       <div v-if="trade.status">
         <!-- TODO: Clean this up -->
@@ -72,7 +72,7 @@ export default {
   components: {
     'loading': Loading
   },
-  props: ['username', 'trade', 'books', 'error'],
+  props: ['username', 'trade', 'books'],
   computed: {
     offerText () {
       return this.trade.offer.owner !== this.username ? this.trade.offer.owner + ' is ' : 'You are'

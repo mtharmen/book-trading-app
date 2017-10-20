@@ -33,6 +33,9 @@ function LocalSignUp (req, res, next) {
   if (usernameRegExp.test(username)) {
     return next(new CustomError('Invalid Username', 400))
   }
+  if (password && password.length < 4) {
+    throw new CustomError('Password must be more than 4 characters', 400)
+  }
   User.find({ $or: [{ 'username': username }, { 'local.email': email }] }).exec()
     .then(users => {
       if (users.length) {
@@ -138,12 +141,23 @@ function dupeCheck (req, res, next) {
     })
 }
 
-router.get('/update-info', my.verifyToken, my.passwordCheck, (req, res, next) => {
-  console.log(req.body)
-  checkUpdateInfo(req.body, req, next)
+router.post('/update-info', my.verifyToken, my.passwordCheck, (req, res, next) => {
+  if (req.body.password && req.body.password.length < 4) {
+    throw new CustomError('Password must be more than 4 characters', 400)
+  }
+  if (req.body.email && emailRegExp.test(req.body.email)) {
+    return next(new CustomError('Invalid Email Format', 400))
+  }
+  User.findOne({ 'local.email': req.body.email }).exec()
+    .then(user => {
+      if (user) {
+        throw new CustomError('Email already in use', 409)
+      }
+      return checkUpdateInfo(req.body, req, next)
+    })
     .then(updated => {
-      res.send('testing')
-      // return my.sendToken(req, res)
+      req.user = updated
+      return my.sendToken(req, res)
     })
     .catch(err => {
       return next(err)
@@ -152,25 +166,21 @@ router.get('/update-info', my.verifyToken, my.passwordCheck, (req, res, next) =>
 
 function checkUpdateInfo (updateInfo, req, next) {
   let update = {}
-  if (req.body.email) {
-    console.log('updating email to ' + req.body.email)
-    update = { 'local.email': req.body.email }
-  } else if (req.body.password) {
-    console.log('updating password to ' + req.body.password)
+  if (req.body.password) {
     update = { 'local.password': User.generateHash(req.body.password) }
   } else if (req.body.firstname || req.body.lastname || req.body.province || req.body.city) {
-    console.log('updating profile info')
     update = {
       'profile.firstname': req.body.firstname || req.user.profile.firstname,
       'profile.lastname': req.body.lastname || req.user.profile.lastname,
       'profile.province': req.body.province || req.user.profile.province,
       'profile.city': req.body.city || req.user.profile.city
     }
+  } else if (req.body.email) {
+    update = { 'local.email': req.body.email }
   } else {
     return next(new CustomError('No values given to update', 401))
   }
-  console.log(update)
-  return Promise.resolve('test') // User.findByIdAndUpdate(req.user._id, update).exec()
+  return User.findByIdAndUpdate(req.user._id, update, { new: true }).exec()
 }
 
 // ****************************************************************************************************

@@ -16,7 +16,7 @@
           <h6 class="card-subtitle mb-2" v-if="type === 'trade' || type === 'info'">
             Owner: <span class="text-muted">{{ book.owner }}</span>
           </h6>
-          <button class="btn btn-info" @click="tradeLink" v-if="user.username === book.owner">View all trades with this book</button>
+          <button class="btn btn-info" @click="tradeLink" v-if="user.username === book.owner">View all trades with your book</button>
         </div>
       </div>
       <div slot="modal-footer" :class="{ 'w-100' : type === 'remove' }">
@@ -35,7 +35,7 @@
           </div>
           <span class="text-center" v-if="book.traded">
             This book is part of an accepted trade.
-            <router-link :to="'/my-trades?tradeID=' + book.traded">Click here to go to that trade.</router-link>
+            <router-link :to="{ path: 'my-trades', query: { tradeID: book.traded } }">Click here to go to that trade.</router-link>
           </span>
         </div>
       </div>
@@ -44,7 +44,6 @@
 </template>
 
 <script>
-// import { detailEventBus } from '@/DetailEventBus'
 import userStore from '@/userStore'
 import bookStore from '@/bookStore'
 import tradeStore from '@/tradeStore'
@@ -86,10 +85,8 @@ export default {
           this.close()
         })
         .catch(err => {
-          const error = err.response.data
-          // TODO: Temporary
+          const error = err.message
           console.error(error)
-          // window.location.href = 'http://localhost:8080/error?code=' + error.code
         })
     },
     add () {
@@ -99,10 +96,8 @@ export default {
           this.close()
         })
         .catch(err => {
-          const error = err.response.data
-          // TODO: Temporary
+          const error = err.message
           console.error(error)
-          // window.location.href = 'http://localhost:8080/error?code=' + error.code
         })
     },
     close () {
@@ -112,7 +107,7 @@ export default {
     },
     tradeLink () {
       this.close()
-      router.push('my-trades?ISBN=' + this.book.ISBN)
+      router.push({ name: 'my-trades', query: { ISBN: this.book.ISBN } })
     }
   }
 }

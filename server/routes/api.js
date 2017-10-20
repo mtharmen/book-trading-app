@@ -68,16 +68,25 @@ router.get('/getBook', (req, res, next) => {
   })
 })
 
-router.get('/search/', (req, res, next) => {
-  const valid = /^[A-Za-z0-9\s\-_,.:()]+$/
+router.get('/search/', my.verifyToken, my.UserGuard, (req, res, next) => {
+  if (!req.query.title && !req.query.author && !req.query.isbn) {
+    return next(new CustomError('No Search terms given', 400))
+  }
+  // const valid = /^[A-Za-z0-9\s\-_,.:()]+$/
+  // if (req.query.title && !req.query.title.match(valid)) {
+  //   return next(new CustomError('Invalid Characters used in title', 400))
+  // }
 
-  if (!req.query.title.match(valid)) {
-    return next(new CustomError('Invalid Characters used', 400))
+  // if (req.query.author && !req.query.author.match(valid)) {
+  //   return next(new CustomError('Invalid Characters used in author', 400))
+  // }
+
+  const validISBN = /^[Xx0-9]+$/
+  if (req.query.isbn && !req.query.isbn.match(validISBN)) {
+    return next(new CustomError('ISBN must only contain numbers or the letter X', 400))
   }
 
-  // TODO: Add check to remove books already added to user's library?
-
-  const url = 'https://' + 'www.googleapis.com' + setParameters('/books/v1/volumes?q=', req.query.title)
+  const url = 'https://www.googleapis.com' + setParameters('/books/v1/volumes?q=', req.query)
   const options = {
     uri: url,
     method: 'GET',
@@ -115,6 +124,14 @@ router.get('/search/', (req, res, next) => {
       return next(err)
     })
 })
+
+function setParameters (base, query) {
+  let parameters = ''
+  parameters += query.title ? query.title.replace(' ', '+').toLowerCase() : ''
+  parameters += query.author ? '+inauthor:' + query.author.replace(' ', '+').toLowerCase() : ''
+  parameters += query.isbn ? '+isbn:' + query.isbn : ''
+  return base + parameters
+}
 
 router.post('/addBook', my.verifyToken, my.UserGuard, (req, res, next) => {
   if (!req.body.ISBN || !req.body.title || !req.body.authors || !req.body.image) {
@@ -321,6 +338,8 @@ router.put('/respondToTrade/:id', my.verifyToken, my.UserGuard, (req, res, next)
           { owner: owner1, ISBN: book1 },
           { owner: owner2, ISBN: book2 }
         ]}
+      } else if (trade.status === 'declined') {
+        trade.request.hide = true
       }
       return trade.save()
     })
@@ -473,88 +492,6 @@ router.put('/completeTrade/:id', my.verifyToken, my.UserGuard, (req, res, next) 
     .catch(err => {
       return next(err)
     })
-})
-
-function setParameters (base, terms, isbn, author) {
-  let parameters = terms.replace(' ', '+').toLowerCase()
-  parameters += isbn ? '+isbn:' + isbn : ''
-  parameters += author ? '+inauthor:' + author.replace(' ', '+').toLowerCase() : ''
-
-  return base + parameters
-}
-
-function defineQuery (type, user, ISBN) {
-  const query = {}
-  if (type === 'offer') {
-    query.showOffer = true
-    if (user) {
-      query['offer.owner'] = user
-    } else if (ISBN) {
-      query['offer.ISBN'] = ISBN
-    } else {
-      return 'invalid'
-    }
-  } else if (type === 'request') {
-    // query.status = 'pending' // filter out completed trades
-    query.showRequest = true
-    if (user) {
-      query['request.owner'] = user
-    } else if (ISBN) {
-      query['request.ISBN'] = ISBN
-    } else {
-      return 'invalid'
-    }
-  } else {
-    return 'invalid'
-  }
-  return query
-}
-
-router.get('/testing', (req, res) => {
-  const owner1 = 'Test'
-  const book1 = '0826215491'
-  const owner2 = 'Admin'
-  const book2 = '1466853441'
-
-  // const tradeCheck = {
-  //   '$or': [
-  //     { offer: { '$in': [ { owner: owner1, ISBN: book1 }, { owner: owner2, ISBN: book2 } ] } },
-  //     { request: { '$in': [ { owner: owner1, ISBN: book1 }, { owner: owner2, ISBN: book2 } ] } }
-  //   ]
-  // }
-
-  const tradeCheck = {
-    '$or': [
-      { 'offer.owner': owner1, 'offer.ISBN': book1 },
-      { 'offer.owner': owner2, 'offer.ISBN': book2 },
-      { 'request.owner': owner1, 'request.ISBN': book1 },
-      { 'request.owner': owner2, 'request.ISBN': book2 }
-    ]
-  }
-
-  if (req.query.trade) {
-    Trade.find(tradeCheck, (err, trades) => {
-      if (err) {
-        res.json(err)
-      }
-      console.log(trades)
-      res.json(trades)
-    })
-  }
-
-  const bookQuery = { '$or': [
-    { owner: owner1, ISBN: book1 },
-    { owner: owner2, ISBN: book2 }
-  ]}
-
-  if (req.query.book) {
-    Book.find(bookQuery, (err, books) => {
-      if (err) {
-        res.json(err)
-      }
-      res.json(books)
-    })
-  }
 })
 
 module.exports = router

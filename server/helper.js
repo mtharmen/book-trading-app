@@ -53,7 +53,8 @@ function sendToken (req, res) {
 }
 
 // ********************************************* AUTH FUNCTIONS
-const expiration = CONFIG.expiration || 60 * 120
+// seconds * minutes * hours
+const expiration = CONFIG.expiration || 60 * 60 * 12
 
 function generateToken (user) {
   user.exp = Math.floor(Date.now() / 1000) + expiration

@@ -168,13 +168,11 @@ export default {
           // update userStore
           userStore.login(res.data)
           // redirect to profile page
-          router.push('bookshelf/books')
+          router.push('my-books')
         })
         .catch(err => {
           this.submitting = false
-          const error = err.response.data
-          console.error(error)
-          this.errorMsg(error.message)
+          this.error = err.message
         })
     },
     clear () {
@@ -191,9 +189,6 @@ export default {
       if (!this.submitting) {
         this.$refs.loginModal.hide()
       }
-    },
-    errorMsg (msg) {
-      this.error = msg
     }
   }
 }

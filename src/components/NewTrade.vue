@@ -1,7 +1,7 @@
 <template>
   <div>
-    <!-- <div class="alert alert-danger text-center" v-if="error">{{ error }}</div> -->
-    <app-trade-card :username="user.username" :trade="trade" :books="store.books" :error="error" @userChoice="checkBook" @detail="moreDetail" @submit="submit"></app-trade-card>
+    <div class="alert alert-danger text-center" v-if="error"><strong>Error:</strong> {{ error }}</div>
+    <app-trade-card :username="user.username" :trade="trade" :books="store.books" @userChoice="checkBook" @detail="moreDetail" @submit="submit"></app-trade-card>
     <app-detail-modal ref="details" :type="'info'"></app-detail-modal>
   </div>
 </template>
@@ -14,7 +14,7 @@ import userStore from '@/userStore'
 import tradeStore from '@/tradeStore'
 import bookStore from '@/bookStore'
 import router from '@/router/index'
-import { getBooks$, newTrade$ } from '@/http-request'
+import { getBooks$, makeTrade$ } from '@/http-request'
 
 export default {
   name: 'new-trade',
@@ -35,7 +35,29 @@ export default {
       }
     }
   },
+  created () {
+    this.getBooks()
+  },
+  watch: {
+    '$route': function () {
+      this.getBooks()
+    }
+  },
   methods: {
+    getBooks () {
+      // NOTE: Since the only way to this page is from the front page, opting to prune the list of the books instead of fetching it
+      //       This leaves out the user's books that are not available since they are in the middle of an accepted trade, but they can't use them anyway
+      bookStore.pruneToUser(userStore.user.username)
+      // Getting all books that the request owner has to cross reference with offer owner's books
+      // and make sure the user doesn't offer a trade with a book that the request owner already owns
+      getBooks$(this.trade.request.owner, 1, 1)
+        .then(res => {
+          this.compareBooks(res.data)
+        })
+        .catch(err => {
+          this.error = err.message
+        })
+    },
     moreDetail (book) {
       this.$refs.details.showModal(book)
     },
@@ -67,31 +89,16 @@ export default {
           image: this.trade.request.image
         }
       }
-      newTrade$(newTrade)
+      makeTrade$(newTrade)
         .then(res => {
           this.submitting = false
           router.push('my-trades')
         })
         .catch(err => {
           this.submitting = false
-          const error = err.response.data
-          this.error = error.message
-          console.error(error)
+          this.error = err.message
         })
     }
-  },
-  beforeMount () {
-    bookStore.pruneToUser(userStore.user.username)
-    // Getting all books that the request owner has to cross reference with offer owner's books
-    // and make sure the user doesn't offer a trade with a book that the request owner already owns
-    getBooks$(this.trade.request.owner, 1, 1)
-      .then(res => {
-        this.compareBooks(res.data)
-      })
-      .catch(err => {
-        const error = err.response.data
-        console.error(error)
-      })
   },
   beforeDestroy () {
     tradeStore.clearNewTrade()

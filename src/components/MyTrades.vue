@@ -1,51 +1,52 @@
 <template>
   <div>
-    <!-- TODO: Include option to show trades that include a certain book
-               and add a link from the detail modal of that book? -->
     <ul class="nav nav-pills nav-fill">
-      <li class="nav-item fake-pointer" @click="requestTab = false">
-        <a class="nav-link" :class="{ 'active': !requestTab }">Offers</a>
+      <li class="nav-item fake-pointer" @click="outgoingTab = false">
+        <a class="nav-link" :class="{ 'active': !outgoingTab }">Incoming</a>
       </li>
-      <li class="nav-item fake-pointer" @click="requestTab = true">
-        <a class="nav-link" :class="{ 'active': requestTab }">Requests</a>
+      <li class="nav-item fake-pointer" @click="outgoingTab = true">
+        <a class="nav-link" :class="{ 'active': outgoingTab }">Outgoing</a>
       </li>
     </ul>
     <hr />
-    <!-- TODO: Change to drop down and support pending/accepted/declined -->
-    <button class="btn btn-primary" @click="onlyPending = !onlyPending">{{ onlyPending ? ' Show All' : 'Show Only Pending' }} Trades</button>
-    <!-- <button class="btn btn-primary" @click="showAll">Show All Trades</button> -->
-    <div v-if="!requestTab">
-      <div v-if="filteredTrades.offers.length">
-        <template v-for="(offer, i) in filteredTrades.offers">
+    <div class="alert alert-danger text-center" v-if="error"><strong>Error:</strong> {{error}}</div>
+    <!-- TODO: Figure out why the dropdown alignment breaks when there are no visible trades -->
+    <b-dropdown id="ddown2" :text="'Showing ' + choice + ' Trades'" variant="info" class="m-md-2">
+      <b-dropdown-item @click="choice = 'Pending'">Pending</b-dropdown-item>
+      <b-dropdown-item @click="choice = 'Accepted'">Accepted</b-dropdown-item>
+      <b-dropdown-item @click="choice = 'Declined'">Declined</b-dropdown-item>
+      <b-dropdown-item @click="choice = 'All'">All</b-dropdown-item>
+    </b-dropdown>
+    <div class="trade-list" v-if="!outgoingTab">
+      <div v-if="filteredTrades.incoming.length">
+        <template v-for="(trade, i) in filteredTrades.incoming">
           <app-trade-card 
             :username="user.username"
-            :trade="offer"
-            :error="error"
+            :trade="trade"
             @cancel="cancel"
             @detail="moreDetail"
             @getAddress="getAddress"
             @recieved="recieved"
-            :key="'r' + i"></app-trade-card>
+            :key="'o' + i"></app-trade-card>
         </template>
       </div>
-      <h2 v-if="!filteredTrades.offers.length">You have no offers</h2>
+      <h2 v-if="!filteredTrades.incoming.length">You have no incoming trades</h2>
     </div>
-    <div v-if="requestTab">
-      <div v-if="filteredTrades.requests.length">
-        <template v-for="(request, i) in filteredTrades.requests">
+    <div class="trade-list" v-if="outgoingTab">
+      <div v-if="filteredTrades.outgoing.length">
+        <template v-for="(trade, i) in filteredTrades.outgoing">
           <app-trade-card 
-            :username="user.username" 
-            :trade="request" 
-            :error="error" 
-            @decline="decline" 
-            @accept="accept" 
-            @detail="moreDetail" 
+            :username="user.username"
+            :trade="trade"
+            @decline="decline"
+            @accept="accept"
+            @detail="moreDetail"
             @getAddress="getAddress"
             @recieved="recieved"
-            :key="'r' + i"></app-trade-card>
+            :key="'i' + i"></app-trade-card>
         </template>
       </div>
-      <h2 v-if="!filteredTrades.requests.length">You have no requests</h2>
+      <h2 v-if="!filteredTrades.outgoing.length">You have no outgoing trades</h2>
     </div>
     <app-detail-modal ref="details" :type="'info'"></app-detail-modal>
     <app-mailing-modal ref="mailing"></app-mailing-modal>
@@ -76,79 +77,79 @@ export default {
       error: '',
       user: userStore.user,
       trades: tradeStore.store.trades,
-      onlyPending: false,
-      requestTab: false,
+      choice: 'All',
+      outgoingTab: false,
       allTrades: false
     }
   },
+  created () {
+    this.getTrades('offer')
+    this.getTrades('request')
+  },
+  watch: {
+    '$route': function () {
+      this.getTrades('offer')
+      this.getTrades('request')
+    }
+  },
   computed: {
-    filteredOffers () {
-      return this.trades.offers.filter(offer => {
-        let pass = true
-        if (this.onlyPending) {
-          pass = offer.status === 'pending'
-        }
-        return pass
-      })
-    },
-    filteredRequests () {
-      return this.trades.requests.filter(request => {
-        let pass = true
-        if (this.onlyPending) {
-          pass = request.status === 'pending'
-        }
-        return pass
-      })
-    },
     filteredTrades () {
       const trades = {
         offers: [],
         requests: []
       }
-      trades.offers = this.filterOut(this.trades.offers)
-      trades.requests = this.filterOut(this.trades.requests)
+      trades.outgoing = this.filterOut(this.trades.outgoing)
+      trades.incoming = this.filterOut(this.trades.incoming)
       return trades
     }
   },
   methods: {
     getTrades (type) {
-      const fillType = type === 'offer' ? 'fillOffers' : 'fillRequests'
+      this.submitting = true
+      const fillType = type === 'offer' ? 'fillOutgoing' : 'fillIncoming'
       getTrades$(type, this.ISBN, this.tradeID)
         .then(res => {
+          this.submitting = false
           tradeStore[fillType](res.data)
         })
         .catch(err => {
-          const error = err.response ? err.response.data : 'Server is Busy'
-          console.error(error)
+          this.submitting = false
+          this.error = err.message
         })
     },
     moreDetail (book) {
+      this.error = ''
       getBook$(book.owner, book.ISBN)
         .then(res => {
           this.$refs.details.showModal(res.data)
         })
         .catch(err => {
-          const error = err.response ? err.response.data : 'Server is Busy'
-          console.error(error)
+          this.error = err.message
         })
     },
     filterOut (trades) {
+      const types = ['pending', 'declined', 'accepted']
+      let valid = ''
+      if (this.choice !== 'All') {
+        valid = [this.choice.toLowerCase()]
+      } else {
+        valid = types
+      }
       return trades.filter(trade => {
-        if (this.onlyPending) {
-          return trade.stauts === 'pending'
-        }
-        return true
+        return valid.indexOf(trade.status) > -1
       })
     },
     cancel (id) {
+      this.submtting = true
+      tradeStore.setError(id, undefined)
       removeTrade$(id)
         .then(res => {
-          tradeStore.removeOffer(id)
+          this.submitting = false
+          tradeStore.removeOutgoing(id)
         })
         .catch(err => {
-          const error = err.response ? err.response.data : 'Server is Busy'
-          console.error(error)
-          this.error = error.message
+          this.submitting = false
+          tradeStore.setError(id, err.message)
         })
     },
     decline (id) {
@@ -158,9 +159,12 @@ export default {
       this.respond(id, 'accepted')
     },
     respond (id, tradeResponse) {
+      this.submitting = true
+      tradeStore.setError(id, undefined)
       respondToTrade$(id, tradeResponse)
         .then(res => {
           if (tradeResponse === 'declined') {
+            this.submitting = false
             tradeStore.updateTrade(id, tradeResponse)
           } else {
             this.getTrades('offer')
@@ -168,9 +172,8 @@ export default {
           }
         })
         .catch(err => {
-          const error = err.response ? err.response.data : 'Server is Busy'
-          console.error(error)
-          this.error = error.message
+          this.submitting = false
+          tradeStore.setError(id, err.message)
         })
     },
     getAddress (id) {
@@ -179,32 +182,25 @@ export default {
           this.$refs.mailing.showModal(res.data)
         })
         .catch(err => {
-          const error = err.response ? err.response.data : 'Server is Busy'
-          console.error(error)
-          this.error = error
+          this.error = err.message
         })
     },
     recieved (id, type) {
+      this.submitting = true
       completeTrade$(id)
         .then(res => {
+          this.submitting = false
           tradeStore.recievedBook(id, type)
         })
         .catch(err => {
-          console.error(err)
+          this.submitting = false
+          this.error = err.message
         })
     },
-    showAll () {
-      // Check if already have all trades
-      // if allTrades, just flip seperate variable for filter
-      // if not allTrades, call server
-        // this.submitting = true
-        // get all trades
-      console.log('getting all trades')
+    fetchData () {
+      this.getTrades('offer')
+      this.getTrades('request')
     }
-  },
-  beforeMount () {
-    this.getTrades('offer')
-    this.getTrades('request')
   }
 }
 </script>
@@ -213,5 +209,9 @@ export default {
   .fake-pointer {
     cursor: pointer;
     user-select: none;
+  }
+
+  .trade-list {
+    overflow-y: auto
   }
 </style>

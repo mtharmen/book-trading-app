@@ -6,15 +6,15 @@ import axios from 'axios'
 
 const instance = axios.create({
   baseURL: 'http://localhost:8080',
-  timeout: 5000
+  timeout: 10000
 })
 
 instance.interceptors.response.use(null, err => {
   if (err.response.status === 500) {
-    // window.location.href = 'http://localhost:8080/error?code=500'
-    return Promise.reject(err)
+    window.location.href = 'http://localhost:8080/error?code=500'
+    // return Promise.reject(err)
   }
-  return Promise.reject(err)
+  return Promise.reject(err.response.data)
 })
 
 function setHeaders () {
@@ -45,8 +45,12 @@ export function getBook$ (owner, ISBN) {
   const query = '?owner=' + owner + '&ISBN=' + ISBN
   return instance.get('/api/getBook' + query, setHeaders())
 }
-export function searchBooks$ (title) {
-  return instance.get('/api/search?title=' + title)
+export function searchBooks$ (search) {
+  let query = '?'
+  query += search.title ? 'title=' + search.title + '&' : ''
+  query += search.author ? 'author=' + search.author + '&' : ''
+  query += search.isbn ? 'isbn=' + search.isbn + '&' : ''
+  return instance.get('/api/search' + query, setHeaders())
 }
 export function addBook$ (book) {
   return instance.post('/api/addBook', book, setHeaders())
@@ -56,7 +60,7 @@ export function removeBook$ (id) {
 }
 
 // Trade Stuff
-export function newTrade$ (tradeInfo) {
+export function makeTrade$ (tradeInfo) {
   // const query = '?owner1=' + tradeInfo.offer.owner + '?owner2=' + tradeInfo.request.owner + '?book1=' + tradeInfo.request.ISBN + '?book2=' + tradeInfo.request.ISBN
   return instance.put('/api/makeTrade', { tradeInfo }, setHeaders())
 }

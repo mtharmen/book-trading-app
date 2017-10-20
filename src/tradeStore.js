@@ -1,34 +1,34 @@
 export default {
   store: {
     trades: {
-      offers: [],
-      requests: []
+      outgoing: [],
+      incoming: []
     },
     newTrade: {}
   },
-  fillOffers (offers) {
-    this.store.trades.offers = offers
+  fillOutgoing (trades) {
+    this.store.trades.outgoing = trades
   },
-  fillRequests (requests) {
-    this.store.trades.requests = requests
+  fillIncoming (trades) {
+    this.store.trades.incoming = trades
   },
-  addOffer (offer) {
-    this.store.trades.offers.push(offer)
+  addOutgoing (trade) {
+    this.store.trades.outgoing.push(trade)
   },
-  addRequest (request) {
-    this.store.trades.requests.push(request)
+  addRequest (trade) {
+    this.store.trades.incoming.push(trade)
   },
-  clearOffers () {
-    this.store.trades.offers = []
+  clearOutgoing () {
+    this.store.trades.outgoing = []
   },
-  clearRequests () {
-    this.store.trades.requests = []
+  clearIncoming () {
+    this.store.trades.incoming = []
   },
-  removeOffer (_id) {
-    this.store.trades.offers = this.store.trades.offers.filter(offer => offer._id !== _id)
+  removeOutgoing (_id) {
+    this.store.trades.outgoing = this.store.trades.outgoing.filter(trade => trade._id !== _id)
   },
-  removeRequest (_id) {
-    this.store.trades.requests = this.store.trades.requests.filter(request => request._id !== _id)
+  removeIncoming (_id) {
+    this.store.trades.incoming = this.store.trades.incoming.filter(trade => trade._id !== _id)
   },
   // TODO: change so it doesn't mutate directly?
   recievedBook (_id, type) {
@@ -40,14 +40,22 @@ export default {
   },
   // TODO: change so it doesn't mutate directly?
   updateTrade (_id, status) {
-    this.store.trades.requests.forEach(trade => {
+    this.store.trades.incoming.forEach(trade => {
       if (trade._id === _id) {
         trade.status = status
       }
     })
   },
-  setNewTrade (bookRequest) {
-    this.store.newTrade = bookRequest
+  // TODO: change so it doesn't mutate directly?
+  setError (_id, error) {
+    this.store.trades.incoming.forEach(trade => {
+      if (trade._id === _id) {
+        trade.error = error
+      }
+    })
+  },
+  setNewTrade (newTrade) {
+    this.store.newTrade = newTrade
   },
   clearNewTrade () {
     this.store.newTrade = {}

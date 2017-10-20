@@ -33,18 +33,27 @@ export default {
       error: ''
     }
   },
-  beforeMount () {
-    this.loading = true
-    getBooks$()
+  created () {
+    this.getBooks()
+  },
+  watch: {
+    '$route': function () {
+      this.getBooks()
+    }
+  },
+  methods: {
+    getBooks () {
+      this.loading = true
+      getBooks$()
       .then(res => {
         this.loading = false
         bookStore.fillBookStore(res.data)
       })
       .catch(err => {
         this.loading = false
-        const error = err.response.data
-        this.error = error.message
+        this.error = err.message
       })
+    }
   }
 }
 </script>

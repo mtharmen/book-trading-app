@@ -36,14 +36,14 @@
             <!-- First Name -->
             <div class="form-group" v-if="tab === 'personal'">
               <label for="firstname">First Name</label>
-              <input name="firstname" type="text" class="form-control" :placeholder="user.firstname" v-validate="'alpha|max:50'" maxlength="50" v-model="updateForm.firstname">
+              <input name="firstname" type="text" class="form-control" :placeholder="user.firstname" v-validate="'required|alpha|max:50'" maxlength="50" v-model="updateForm.firstname">
               <span v-show="errors.has('firstname')" class="small text-danger">{{ errors.first('firstname') }}</span>
             </div>
 
             <!-- Last Name -->
             <div class="form-group" v-if="tab === 'personal'">
               <label for="lastname">Last Name</label>
-              <input name="lastname" type="text" class="form-control" :placeholder="user.lastname" v-validate="'alpha|max:50'" maxlength="50" v-model="updateForm.lastname">
+              <input name="lastname" type="text" class="form-control" :placeholder="user.lastname" v-validate="'required|alpha|max:50'" maxlength="50" v-model="updateForm.lastname">
               <span v-show="errors.has('lastname')" class="small text-danger">{{ errors.first('lastname') }}</span>
             </div>
 
@@ -59,7 +59,7 @@
             <!-- City -->
             <div class="form-group" v-if="tab === 'personal'">
               <label for="city">City</label>
-              <input name="city" type="text" class="form-control" :placeholder="user.city" v-validate="'alpha|max:50'" maxlength="50" v-model="updateForm.city">
+              <input name="city" type="text" class="form-control" :placeholder="user.city" v-validate="'required|alpha|max:50'" maxlength="50" v-model="updateForm.city">
               <span v-show="errors.has('city')" class="small text-danger">{{ errors.first('city') }}</span>
             </div>
 
@@ -80,7 +80,7 @@
             <div class="alert alert-danger text-center" v-if="error"><strong>Error:</strong> {{error}}</div>
 
             <!-- Submit -->
-            <button type="submit" class="btn btn-primary btn-block" :disabled="errors.any() || formCheck">
+            <button type="submit" class="btn btn-primary btn-block" :disabled="!formCheck">
               <app-loading v-if="submitting">Submitting...</app-loading>
               <span v-if="!submitting">Submit</span>
             </button>
@@ -94,7 +94,7 @@
 <script>
 import Loading from '@/components/Loading'
 import userStore from '@/userStore'
-import { mockCall$ } from '@/http-request'
+import { updateInfo$ } from '@/http-request'
 
 export default {
   name: 'update-form',
@@ -136,7 +136,13 @@ export default {
   },
   computed: {
     formCheck () {
-      return Object.keys(this.fields).some(key => this.fields[key].pristine)
+      const fields = Object.keys(this.fields).filter(field => field !== 'currentPassword')
+      const currentPassword = this.fields['currentPassword'] ? this.fields['currentPassword'].valid : null
+      // console.log('Password: ' + currentPassword)
+      return fields.some(key => {
+        // console.log(key + ': ' + this.fields[key].valid)
+        return this.fields[key].valid
+      }) && currentPassword
     }
   },
   methods: {
@@ -145,8 +151,9 @@ export default {
       this.clear()
     },
     update () {
+      this.error = ''
       const updateInfo = {
-        password: this.updateForm.currentPassword
+        currentPassword: this.updateForm.currentPassword
       }
       if (this.tab === 'personal') {
         updateInfo.firstname = this.updateForm.firstname
@@ -160,31 +167,15 @@ export default {
         updateInfo.password2 = this.updateForm.password2
       }
       this.submitting = true
-      mockCall$(updateInfo)
+      updateInfo$(updateInfo)
         .then(res => {
           this.submitting = false
-          console.log(res.data)
-          // update userStore
-          const profile = {
-            firstname: updateInfo.firstname || this.user.firstname,
-            lastname: updateInfo.lastname || this.user.lastname,
-            province: updateInfo.province || this.user.province,
-            city: updateInfo.city || this.user.city
-          }
-          const userData = {
-            token: '123abc',
-            exp: Date.now() + 1000 * 20,
-            username: this.user.username,
-            email: updateInfo.email || this.user.email,
-            profile: JSON.stringify(profile)
-          }
-          userStore.login(userData)
+          userStore.login(res.data)
           this.clear()
         })
         .catch(err => {
           this.submitting = false
-          console.error(err)
-          this.errorMsg(err.message)
+          this.error = err.message
         })
     },
     clear () {
@@ -195,9 +186,6 @@ export default {
       this.$nextTick(() => {
         this.errors.clear()
       })
-    },
-    errorMsg (msg) {
-      this.error = msg
     }
   }
 }
