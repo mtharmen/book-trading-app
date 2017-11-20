@@ -2,7 +2,8 @@
   <div>
     <slot></slot>
     <b-modal id="mailingModal" ref="mailingModal" hide-footer :title="username">
-      {{ address }}
+      <p>Name: {{ fullname }}</p>
+      <p>Address: {{ address.city}}, {{ address.province }}</p>
     </b-modal>
   </div>
 </template>
@@ -15,6 +16,12 @@ export default {
       address: '',
       username: ''
     }
+  },
+  computed: {
+    fullname () {
+      return this.address.firstname + ' ' + this.address.lastname
+    }
+
   },
   methods: {
     showModal (info) {

@@ -118,8 +118,13 @@ export default {
       })
     },
     clearSearch () {
+      const defaults = {
+        title: 'Enter a title',
+        author: 'Enter an author',
+        isbn: 'Enter an ISBN'
+      }
       Object.keys(this.search).forEach(key => {
-        this.previous[key] = this.search[key] ? this.search[key] : this.previous[key]
+        this.previous[key] = this.search[key] ? this.search[key] : defaults[key] // this.previous[key]
         this.search[key] = ''
       })
     }

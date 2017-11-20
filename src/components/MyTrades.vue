@@ -17,24 +17,10 @@
       <b-dropdown-item @click="choice = 'Declined'">Declined</b-dropdown-item>
       <b-dropdown-item @click="choice = 'All'">All</b-dropdown-item>
     </b-dropdown>
+    <!-- TODO: split off tabs into their own components? -->
     <div class="trade-list" v-if="!outgoingTab">
       <div v-if="filteredTrades.incoming.length">
         <template v-for="(trade, i) in filteredTrades.incoming">
-          <app-trade-card 
-            :username="user.username"
-            :trade="trade"
-            @cancel="cancel"
-            @detail="moreDetail"
-            @getAddress="getAddress"
-            @recieved="recieved"
-            :key="'o' + i"></app-trade-card>
-        </template>
-      </div>
-      <h2 v-if="!filteredTrades.incoming.length">You have no incoming trades</h2>
-    </div>
-    <div class="trade-list" v-if="outgoingTab">
-      <div v-if="filteredTrades.outgoing.length">
-        <template v-for="(trade, i) in filteredTrades.outgoing">
           <app-trade-card 
             :username="user.username"
             :trade="trade"
@@ -46,7 +32,22 @@
             :key="'i' + i"></app-trade-card>
         </template>
       </div>
-      <h2 v-if="!filteredTrades.outgoing.length">You have no outgoing trades</h2>
+      <h2 v-if="!filteredTrades.incoming.length">You have no {{ choice !== 'All' ? choice.toLowerCase() : '' }} incoming trades</h2>
+    </div>
+    <div class="trade-list" v-if="outgoingTab">
+      <div v-if="filteredTrades.outgoing.length">
+        <template v-for="(trade, i) in filteredTrades.outgoing">
+          <app-trade-card 
+            :username="user.username"
+            :trade="trade"
+            @cancel="cancel"
+            @detail="moreDetail"
+            @getAddress="getAddress"
+            @recieved="recieved"
+            :key="'o' + i"></app-trade-card>
+        </template>
+      </div>
+      <h2 v-if="!filteredTrades.outgoing.length">You have no {{ choice !== 'All' ? choice.toLowerCase() : '' }} outgoing trades</h2>
     </div>
     <app-detail-modal ref="details" :type="'info'"></app-detail-modal>
     <app-mailing-modal ref="mailing"></app-mailing-modal>

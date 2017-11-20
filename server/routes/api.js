@@ -81,9 +81,14 @@ router.get('/search/', my.verifyToken, my.UserGuard, (req, res, next) => {
   //   return next(new CustomError('Invalid Characters used in author', 400))
   // }
 
-  const validISBN = /^[Xx0-9]+$/
-  if (req.query.isbn && !req.query.isbn.match(validISBN)) {
-    return next(new CustomError('ISBN must only contain numbers or the letter X', 400))
+  const validISBNregexp = /^[Xx0-9]+$/
+  if (req.query.isbn) {
+    if (!req.query.isbn.match(validISBNregexp)) {
+      return next(new CustomError('ISBN must only contain numbers or the letter X', 400))
+    }
+    if (req.query.isbn.length !== 10 && req.query.isbn.length !== 13) {
+      return next(new CustomError('ISBN must be either 10 or 13 characters long', 400))
+    }
   }
 
   const url = 'https://www.googleapis.com' + setParameters('/books/v1/volumes?q=', req.query)
@@ -105,16 +110,18 @@ router.get('/search/', my.verifyToken, my.UserGuard, (req, res, next) => {
         const book = {}
         // If the book has an ISBN, add that book
         const ISBNs = booksInfo[i].volumeInfo.industryIdentifiers
+        const validISBN = ISBNs && ISBNs.some(isbn => isbn.identifier.match(validISBNregexp))
+        // const validISBN = ISBNs && ISBNs.some(isbn => isbn.identifier === 'ISBN_10' || isbn.type === 'ISBN_13')
         const imageLink = booksInfo[i].volumeInfo.imageLinks
-        if (ISBNs && imageLink) {
+        if (validISBN && imageLink) {
           book.title = booksInfo[i].volumeInfo.title
           book.authors = booksInfo[i].volumeInfo.authors
-          book.ISBN = ISBNs[0].type === 'ISBN_10' ? ISBNs[0].identifier : ISBNs[1].identifier
-          book.image = booksInfo[i].volumeInfo.imageLinks.thumbnail
+          book.ISBN = ISBNs[0].type !== 'ISBN_10' && ISBNs[1] ? ISBNs[1].identifier : ISBNs[0].identifier
+          book.image = imageLink.thumbnail
           // book.description = booksInfo[i].searchInfo ? booksInfo[i].searchInfo.textSnippet : 'No Description Available.'
           // book.description = booksInfo[i].volumeInfo.description ? booksInfo[i].volumeInfo.description : 'No Description Available.'
           bookList.push(book)
-        } else if (booksInfo.length > maxBooks) {
+        } else if (booksInfo.length > maxBooks && maxBooks < 20) {
           maxBooks += 1
         }
       }

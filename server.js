@@ -9,7 +9,7 @@ const CONFIG = require('./server/config')
 // ************************************************************************************ MONGOOSE SETUP
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise
-const dbName = 'bookTestDB'
+const dbName = 'mtharmen-book-trading'
 mongoose.connect(CONFIG.mongodbUrl + `/${dbName}`, { useMongoClient: true })
 const db = mongoose.connection
 db.on('error', err => { console.error(err) })
@@ -30,33 +30,30 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(methodOverride('X-HTTP-Method-Override'))
 
-const morgan = require('morgan')
-app.use(morgan('dev'))
+if (process.env.NODE_ENV === 'dev') {
+  const morgan = require('morgan')
+  app.use(morgan('dev'))
 
-// CORS Support
-app.use((req, res, next) => {
+  // CORS Support
+  const cors = require('cors')
   const allowedOrigins = [
-    'http://127.0.0.1:4200',
-    'http://localhost:4200'
+    'http://localhost:4200',
+    'http://localhost:8080'
   ]
-  let origin = req.headers.origin
-  if (allowedOrigins.indexOf(origin) > -1) {
-    res.setHeader('Access-Control-Allow-Origin', origin)
+  const corsOptions = {
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.indexOf(origin) > -1) {
+        cb(null, true)
+      } else {
+        cb(new Error('Invalid Origin'))
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true
   }
-  const allowedHeaders = [
-    'Accept',
-    'Access-Control-Allow-Credentials',
-    'Authorization',
-    'Content-Type',
-    'Origin',
-    'X-Requested-With'
-  ].join(', ')
-  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
-  res.header('Access-Control-Allow-Headers', allowedHeaders)
-  res.header('Access-Control-Expose-Headers', 'Authorization')
-  res.header('Access-Control-Allow-Credentials', 'true')
-  next()
-})
+  app.use(cors(corsOptions))
+  app.options('*', cors(corsOptions))
+}
 
 // ************************************************************************************ ROUTES
 if (process.env.NODE_ENV !== 'dev') {

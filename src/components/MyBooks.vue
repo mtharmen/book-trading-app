@@ -1,5 +1,6 @@
 <template>
-    <div>
+  <div>
+    <h1>My Books</h1>
     <app-loading v-if="loading"></app-loading>
     <div class="alert alert-danger text-center" v-if="error && !loading">
       <strong>Error:</strong> {{error}}
