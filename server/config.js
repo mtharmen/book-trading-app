@@ -1,8 +1,6 @@
 if (process.env.NODE_ENV === 'dev') {
   require('dotenv').config()
 }
-require('dotenv').config()
-
 
 module.exports = {
   IP: process.env.IP || 'localhost',
