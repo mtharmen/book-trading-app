@@ -9,3 +9,4 @@
 ## Possible Updates:
 1. Better way to handle book arrival confirmation
 2. Only show completed offers from the past 30 days with an option to see all past offers
+3. Notifications for new incoming offers and responses to outgoing offers
