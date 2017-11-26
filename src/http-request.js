@@ -4,8 +4,9 @@ import axios from 'axios'
 // TODO: Add global error handler
 // https://github.com/axios/axios/issues/367
 
+const baseURL = window.location.hostname !== 'localhost' ? window.location.origin : 'http://localhost:8080'
 const instance = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: baseURL,
   timeout: 10000
 })
 
